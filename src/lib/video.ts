@@ -5,7 +5,7 @@ import fs from "fs";
 import os from "os";
 
 const isWindows = process.platform === "win32";
-const ytdlpPath = process.env.YT_DLP_PATH || (isWindows ? "C:\\yt-dlp\\yt-dlp.exe" : path.join(process.cwd(), "src", "bin", "yt-dlp"));
+const ytdlpPath = process.env.YT_DLP_PATH || (isWindows ? "C:\\yt-dlp\\yt-dlp.exe" : "yt-dlp");
 
 console.log(`[OS: ${process.platform}] Using yt-dlp path:`, ytdlpPath);
 
