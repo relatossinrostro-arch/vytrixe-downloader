@@ -16,6 +16,7 @@ export const metadata: Metadata = {
 };
 
 import { CookieBanner } from "@/components/CookieBanner";
+import { AdPopunder } from "@/components/AdPopunder";
 
 export default function RootLayout({
   children,
@@ -30,6 +31,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col font-sans">
         {children}
         <CookieBanner />
+        <AdPopunder />
       </body>
     </html>
   );

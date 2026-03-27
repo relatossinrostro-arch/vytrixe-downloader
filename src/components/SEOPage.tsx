@@ -7,10 +7,13 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Hero } from "@/components/Hero";
 import { ResultCard } from "@/components/ResultCard";
+import { AdsterraAds } from "@/components/AdsterraAds";
+import { AdNative } from "@/components/AdNative";
 import { AdPlaceholder } from "@/components/AdPlaceholder";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorAlert } from "@/components/ErrorAlert";
 import { VideoInfo } from "@/lib/video";
+import { ADS_CONFIG } from "@/lib/adsConfig";
 
 interface SEOPageProps {
   platform: string;
@@ -106,13 +109,18 @@ export function SEOPage({ platform, title, subtitle, content, faqData }: SEOPage
           <ResultCard info={videoInfo} onReset={() => setVideoInfo(null)} />
         )}
 
-        <AdPlaceholder slot="content" />
+        <AdsterraAds 
+          zoneId={ADS_CONFIG.BANNER_MID.id} 
+          format={ADS_CONFIG.BANNER_MID.format}
+          minHeight={ADS_CONFIG.BANNER_MID.minHeight}
+          className="my-12"
+        />
 
         <div className="container mx-auto px-4 py-20 max-w-4xl prose prose-blue lg:prose-lg">
           {content}
         </div>
 
-        <AdPlaceholder slot="bottom" />
+        <AdNative />
 
         {/* Internal Linking Section */}
         <section className="bg-gray-50 py-20 border-t border-gray-100">

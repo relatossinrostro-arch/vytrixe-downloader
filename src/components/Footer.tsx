@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Globe, Share2, Mail, Play } from "lucide-react";
-import { AdPlaceholder } from "@/components/AdPlaceholder";
+import { AdsterraAds } from "./AdsterraAds";
+import { ADS_CONFIG } from "@/lib/adsConfig";
 
 export function Footer() {
   return (
@@ -45,7 +46,13 @@ export function Footer() {
             </ul>
           </div>
         </div>
-        <AdPlaceholder slot="bottom" className="mt-12 opacity-50" />
+        
+        <AdsterraAds 
+          zoneId={ADS_CONFIG.BANNER_BOTTOM.id} 
+          format={ADS_CONFIG.BANNER_BOTTOM.format}
+          minHeight={ADS_CONFIG.BANNER_BOTTOM.minHeight}
+          className="mt-12 opacity-80"
+        />
         <div className="mt-12 flex flex-col items-center justify-between border-t border-gray-50 pt-8 sm:flex-row">
           <p className="text-xs text-gray-400">
             © {new Date().getFullYear()} Vytrixe Downloader. All rights reserved.

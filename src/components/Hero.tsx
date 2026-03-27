@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link2, ArrowRight, Shield, Zap, Star } from "lucide-react";
-import { AdPlaceholder } from "./AdPlaceholder";
+import { AdsterraAds } from "./AdsterraAds";
+import { ADS_CONFIG } from "@/lib/adsConfig";
 
 interface HeroProps {
   onSearch: (url: string) => void;
@@ -29,7 +30,12 @@ export function Hero({ onSearch, isLoading }: HeroProps) {
       </div>
 
       <div className="container relative mx-auto px-4 sm:px-6">
-        <AdPlaceholder slot="header" className="mb-12" />
+        <AdsterraAds 
+          zoneId={ADS_CONFIG.BANNER_TOP.id} 
+          format={ADS_CONFIG.BANNER_TOP.format}
+          minHeight={ADS_CONFIG.BANNER_TOP.minHeight}
+          className="mb-12"
+        />
 
         <div className="flex flex-col items-center text-center">
           <motion.div
