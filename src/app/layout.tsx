@@ -15,6 +15,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { CookieBanner } from "@/components/CookieBanner";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -25,7 +27,10 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="min-h-full flex flex-col font-sans">
+        {children}
+        <CookieBanner />
+      </body>
     </html>
   );
 }
