@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# VIDXOR Downloader - Premium Video Downloader
 
-## Getting Started
+A full-featured, production-ready video downloader built with Next.js 15, TypeScript, and TailwindCSS.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Multi-Platform Support:** Download videos from TikTok, Instagram, YouTube, and Facebook.
+- **Premium Design:** Clean, white, Apple-style UI with smooth animations.
+- **HD Quality:** Automatically detects and fetches the best available quality.
+- **SEO Optimized:** Dedicated pages for each platform with long-form SEO content.
+- **Fast & Reliable:** Uses `yt-dlp` for robust video extraction.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Frontend:** Next.js (App Router), TypeScript, TailwindCSS, Framer Motion.
+- **Backend:** Node.js API Routes, `yt-dlp` (via child\_process), Axios.
+- **Icons:** Lucide React.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Prerequisites
 
-## Learn More
+To run this application, you must have the following installed on your system:
 
-To learn more about Next.js, take a look at the following resources:
+1.  **Node.js** (v18.0.0 or later)
+2.  **yt-dlp:** This is the core engine for video extraction.
+    - [Install yt-dlp](https://github.com/yt-dlp/yt-dlp#installation)
+3.  **FFmpeg:** Required for merging video and audio streams (especially for high quality).
+    - [Install FFmpeg](https://ffmpeg.org/download.html)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Setup Instructions
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1.  **Clone the repository.**
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+3.  **Configure environment variables:**
+    Create a `.env.local` file based on `.env.example`.
+4.  **Run the development server:**
+    ```bash
+    npm run dev
+    ```
+5.  **Build for production:**
+    ```bash
+    npm run build
+    npm start
+    ```
 
-## Deploy on Vercel
+## Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `src/app`: Next.js App Router pages and API routes.
+- `src/components`: Reusable UI components.
+- `src/lib`: Backend utilities and video extraction logic.
+- `src/app/globals.css`: Global styles and Tailwind 4 design tokens.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deployment
+
+### VPS (Recommended)
+This app is best suited for VPS deployment (DigitalOcean, Linode, AWS EC2) where you have full control over the environment to install `yt-dlp` and `ffmpeg`.
+
+### Vercel
+Deployment to Vercel is possible but limited because Vercel doesn't easily support custom binaries like `yt-dlp` and `ffmpeg` in serverless functions without complex workarounds (like using a lambda layer or a container).
+
+## License
+
+This project is for educational purposes. Users are responsible for complying with the terms of service of the third-party platforms they interact with.
