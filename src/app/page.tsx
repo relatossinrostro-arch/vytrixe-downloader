@@ -8,6 +8,7 @@ import { Hero } from "@/components/Hero";
 import { ResultCard } from "@/components/ResultCard";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorAlert } from "@/components/ErrorAlert";
+import { getVideoInfo } from "@/lib/video";
 import type { VideoInfo } from "@/lib/video";
 
 export default function Home() {
@@ -46,16 +47,16 @@ export default function Home() {
     setVideoInfo(null);
 
     try {
-      const response = await axios.post("/api/download", { url });
+      const info = await getVideoInfo(url);
       
-      if (response.data && response.data.url) {
-        setVideoInfo(response.data);
+      if (info && info.title) {
+        setVideoInfo(info);
         setLoading(false);
       } else {
-        throw new Error(response.data.error || "Video URL not found.");
+        throw new Error("Video info not found.");
       }
     } catch (err: any) {
-      const msg = err.response?.data?.error || err.message || "Unable to fetch video. Try another link.";
+      const msg = err.message || "Unable to fetch video. Try another link.";
       setError(msg);
       setLoading(false);
     }
@@ -69,6 +70,10 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-white">
       <Navbar />
+      
+      <div className="bg-red-600 text-white p-6 font-black text-center text-lg shadow-xl relative z-50">
+        🚀 TAILWIND CSS V3 TEST: IF THIS IS BRIGHT RED WITH WHITE BOLD TEXT, STYLES ARE WORKING!
+      </div>
       
       <main className="flex-1">
         {!videoInfo && !loading && (

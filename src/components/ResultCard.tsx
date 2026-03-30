@@ -13,9 +13,31 @@ interface ResultCardProps {
 }
 
 export function ResultCard({ info, videoUrl, onReset }: ResultCardProps) {
-  const handleDownload = () => {
-    if (info.url) {
-      window.open(info.url, "_blank");
+  const handleDownload = async (formatId: string) => {
+    try {
+      // Call our VPS download endpoint
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://167.86.74.3:3001"}/download`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: videoUrl, formatId }),
+      });
+      
+      if (!response.ok) throw new Error("Download failed");
+      
+      const data = await response.json();
+      if (data.url) {
+        // Trigger download
+        const link = document.createElement("a");
+        link.href = data.url;
+        link.setAttribute("download", data.fileName || "video.mp4");
+        link.target = "_blank";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (error) {
+      console.error("Download error:", error);
+      alert("Failed to start download. Please try again.");
     }
   };
 
@@ -76,42 +98,60 @@ export function ResultCard({ info, videoUrl, onReset }: ResultCardProps) {
               {info.title}
             </h2>
 
-            <p className="text-xs font-bold uppercase tracking-widest text-blue-600 mb-2">
-              Ready to download instantly
+            <p className="text-xs font-bold uppercase tracking-widest text-blue-600 mb-6 font-black animate-pulse">
+              Select quality to download:
             </p>
 
-            <div className="space-y-4 mt-auto">
-              <motion.button
-                onClick={handleDownload}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full relative flex items-center justify-between rounded-2xl border border-blue-200 bg-blue-50/30 p-4 transition-all group hover:bg-blue-50"
-              >
-                <span className="absolute -top-2.5 right-4 rounded-full bg-blue-600 px-3 py-0.5 text-[10px] font-bold text-white shadow-lg z-10">
-                  HD Quality
-                </span>
-                <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm transition-colors">
-                    <Download size={20} />
+            <div className="space-y-3 mt-auto max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+              {(info.formats || []).length > 0 ? (
+                info.formats?.map((format, idx) => (
+                  <motion.button
+                    key={format.format_id || idx}
+                    onClick={() => handleDownload(format.format_id)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50/50 p-4 transition-all hover:bg-blue-50 hover:border-blue-100 group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-blue-600 shadow-sm group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                        <Download size={18} />
+                      </div>
+                      <div className="text-left">
+                        <p className="text-sm font-black text-gray-900">{format.quality} quality</p>
+                        <p className="text-[10px] font-bold text-gray-400 capitalize">
+                          {format.ext} • {format.filesize ? `${(format.filesize / 1024 / 1024).toFixed(1)} MB` : "Auto size"}
+                        </p>
+                      </div>
+                    </div>
+                    <ExternalLink size={14} className="text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </motion.button>
+                ))
+              ) : (
+                <motion.button
+                  onClick={() => handleDownload("best")}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full flex items-center justify-between rounded-2xl border border-blue-200 bg-blue-50 p-5 transition-all group shadow-lg shadow-blue-100"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm">
+                      <Download size={22} />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-base font-black text-gray-900">Download Best Quality</p>
+                      <p className="text-[11px] font-bold text-gray-500">Fast Download • No Watermark</p>
+                    </div>
                   </div>
-                  <div className="text-left">
-                    <p className="text-sm font-black text-gray-900">Descargar Video</p>
-                    <p className="text-[11px] font-bold text-gray-400">
-                      Enlace directo • Alta velocidad
-                    </p>
-                  </div>
-                </div>
-                <ExternalLink size={16} className="text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </motion.button>
-
-              <AdPlaceholder slot="content" className="!my-2" />
+                  <Download size={20} className="text-blue-600" />
+                </motion.button>
+              )}
 
               <div className="pt-4 text-center space-y-2">
                 <p className="text-[10px] font-bold text-red-500 uppercase tracking-tighter animate-pulse">
-                  🔥 Available for a limited time
+                  🔥 High speed processing enabled
                 </p>
                 <p className="text-[10px] font-bold text-gray-400 flex items-center justify-center gap-2">
-                  Safe • No watermark • Free
+                  Safe • No watermark • Premium Server
                 </p>
               </div>
             </div>
