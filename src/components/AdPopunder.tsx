@@ -1,20 +1,23 @@
 "use client";
 
 import { useEffect } from "react";
-import { getCookieConsentValue } from "react-cookie-consent";
 import { ADS_SCRIPTS, ADS_FREQUENCY } from "@/lib/adsConfig";
+import { useUser } from "@/context/UserContext";
 
 export function AdPopunder() {
+  const { isPremium } = useUser();
+
   useEffect(() => {
     // 1. Consent Validation
-    if (getCookieConsentValue("vytrixe_cookie_consent") !== "true") return;
+    const consent = typeof window !== "undefined" ? localStorage.getItem("vytrixe-cookie-consent") : null;
+    if (consent !== "true" || isPremium) return;
 
     // 2. Frequency Check (24 Hours)
     const lastShow = localStorage.getItem("adsterra_last_shown");
     const now = Date.now();
     
     if (lastShow && now - parseInt(lastShow) < ADS_FREQUENCY.POPUNDER_MS) {
-      console.log("🛡️ VYTRIXE: Popunder skipped (24h cooldown active)");
+      console.log("🛡️ Vytrixe: Popunder skipped (24h cooldown active)");
       return;
     }
 
@@ -33,7 +36,7 @@ export function AdPopunder() {
       
       // Update Cooldown
       localStorage.setItem("adsterra_last_shown", now.toString());
-      console.log("💰 VYTRIXE: Production Popunder initiated.");
+      console.log("💰 Vytrixe: Production Popunder initiated.");
     } catch (err) {
       console.error("Adsterra Popunder Error:", err);
     }

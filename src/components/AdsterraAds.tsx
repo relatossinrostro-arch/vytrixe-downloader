@@ -15,7 +15,8 @@ export function AdsterraAds({ zoneId, format, className = "", minHeight = "0px" 
 
   useEffect(() => {
     // 1. Consent Validation
-    if (getCookieConsentValue("vytrixe_cookie_consent") !== "true") return;
+    const consent = typeof window !== "undefined" ? localStorage.getItem("vytrixe-cookie-consent") : null;
+    if (consent !== "true") return;
     if (!containerRef.current || !zoneId) return;
 
     // 2. Duplicate Check
@@ -44,7 +45,7 @@ export function AdsterraAds({ zoneId, format, className = "", minHeight = "0px" 
       containerRef.current.appendChild(atOptions);
       containerRef.current.appendChild(invoke);
       
-      console.log(`💰 VYTRIXE: Adsterra Banner [${zoneId}] injected.`);
+      console.log(`💰 Vytrixe: Adsterra Banner [${zoneId}] injected.`);
     } catch (err) {
       console.error("Adsterra Banner Error:", err);
     }

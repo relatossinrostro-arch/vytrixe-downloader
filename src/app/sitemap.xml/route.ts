@@ -1,3 +1,4 @@
+export const dynamic = "force-static";
 import { NextResponse } from "next/server";
 
 const BASE_URL = "https://www.vytrixe.com";
@@ -20,6 +21,12 @@ const routes = [
   "/download-mp4-from-link",
   "/free-video-downloader-online",
   "/best-video-downloader-2026",
+  "/video-to-text",
+  "/image-editor",
+  "/premium",
+  "/download-instagram-stories",
+  "/facebook-story-downloader",
+  "/download-audio",
   "/privacy",
   "/terms",
 ];

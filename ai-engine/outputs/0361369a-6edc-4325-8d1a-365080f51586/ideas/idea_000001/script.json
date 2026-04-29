@@ -1,0 +1,228 @@
+{
+  "scenes": [
+    {
+      "scene_number": 1,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "A stickman character with a distressed expression, wearing casual clothes.",
+            "action": "Holding empty pockets, with abstract dollar signs flying away from them like smoke."
+          }
+        ],
+        "environment": "A dimly lit, slightly messy room, symbolizing financial chaos.",
+        "lighting": "Gloomy, with dramatic shadows.",
+        "composition": "Medium shot, focused on the character and their disappearing money.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "¿Gastas sin control y tu dinero se esfuma? ¡Detén ese sangrado financiero YA!"
+    },
+    {
+      "scene_number": 2,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "A stickman character looking confused and stressed, surrounded by bills.",
+            "action": "Shrugging, overwhelmed by a pile of bills."
+          }
+        ],
+        "environment": "A desk cluttered with invoices and receipts.",
+        "lighting": "Harsh, highlighting the stress.",
+        "composition": "Close-up on the character's face and the overwhelming bills.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "El error más común es dejar que el tiempo pase sin hacer que tu dinero trabaje para ti."
+    },
+    {
+      "scene_number": 3,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "A stickman character with a defeated posture.",
+            "action": "Sitting on a single, deflated balloon labeled 'Savings'."
+          }
+        ],
+        "environment": "A barren, empty landscape, symbolizing stagnation.",
+        "lighting": "Monotone and dull.",
+        "composition": "Wide shot to emphasize isolation and lack of growth.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "Piensas que no tienes suficiente, pero subestimas el poder de empezar poco a poco."
+    },
+    {
+      "scene_number": 4,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "A stickman character looking sadly at an empty piggy bank.",
+            "action": "Shaking an empty piggy bank upside down."
+          }
+        ],
+        "environment": "A simple, almost empty room.",
+        "lighting": "Dim, casting long shadows.",
+        "composition": "Eye-level shot, emphasizing the emptiness.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "La inacción es tu peor enemigo cuando se trata de tus finanzas."
+    },
+    {
+      "scene_number": 5,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "A stickman character with a curious expression, looking at a sprouting seedling.",
+            "action": "Gently touching a small green sprout."
+          }
+        ],
+        "environment": "A patch of fertile soil, with a single drop of water about to fall on the sprout.",
+        "lighting": "Soft, natural light, hinting at new beginnings.",
+        "composition": "Close-up on the sprout and the character's hand.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "Pero existe una magia: el interés compuesto. Tu dinero empieza a generar más dinero."
+    },
+    {
+      "scene_number": 6,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "A stickman character holding a magnifying glass over a small coin.",
+            "action": "Examining a single coin with intense focus."
+          }
+        ],
+        "environment": "A minimalist setting, with the focus solely on the coin and the character.",
+        "lighting": "A spotlight on the coin and magnifying glass, symbolizing discovery.",
+        "composition": "Extreme close-up, highlighting the detail on the coin.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "Imagina que cada dólar que inviertes es una semilla."
+    },
+    {
+      "scene_number": 7,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "A graphic showing two lines: one flat and one with a steep upward curve. A stickman character is walking along the curved line.",
+            "action": "Walking confidently on an upward-trending graph line."
+          }
+        ],
+        "environment": "An abstract space with glowing lines representing financial growth.",
+        "lighting": "Bright and optimistic, with glowing accents.",
+        "composition": "Side view, showing the character's progression.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "Esa semilla, con el tiempo, ¡germina y da frutos! Y esos frutos, ¡generan más semillas!"
+    },
+    {
+      "scene_number": 8,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "A visual comparison: on the left, a small pile of coins. On the right, a much larger pile of coins with some bills on top.",
+            "action": "Visually contrasting small initial investment with significant growth."
+          }
+        ],
+        "environment": "Clean, split background, clearly demarcating the two sides of the comparison.",
+        "lighting": "Bright and clear, highlighting the difference.",
+        "composition": "Split screen or side-by-side comparison.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "Es la magia del interés sobre interés. Tu dinero trabajando sin que tú muevas un dedo."
+    },
+    {
+      "scene_number": 9,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "A stickman character looking at a simple calculator, with numbers appearing on its screen.",
+            "action": "Pressing a button on the calculator, showing numbers increasing rapidly."
+          }
+        ],
+        "environment": "A clean, minimalist desk with a calculator.",
+        "lighting": "Focus on the calculator's screen and the character's hands.",
+        "composition": "Close-up on the calculator and the character's interaction.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "No necesitas ser un experto, solo ser constante."
+    },
+    {
+      "scene_number": 10,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "A stickman character holding a small bag of seeds, about to plant them.",
+            "action": "Kneeling down and placing a few seeds into the ground."
+          }
+        ],
+        "environment": "A small, well-tended garden plot.",
+        "lighting": "Warm, golden hour light, symbolizing potential.",
+        "composition": "Medium shot, showing the character and the action of planting.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "Invierte una pequeña cantidad hoy, y observa cómo crece exponencialmente."
+    },
+    {
+      "scene_number": 11,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "A stickman character standing proudly next to a flourishing tree laden with coins and bills.",
+            "action": "Smiling, arms outstretched, beside a thriving money tree."
+          }
+        ],
+        "environment": "A vibrant, lush garden, bathed in sunlight.",
+        "lighting": "Bright, warm, and abundant.",
+        "composition": "Wide shot, showcasing the character and their impressive financial harvest.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "¡Este es el poder del interés compuesto acelerado!"
+    },
+    {
+      "scene_number": 12,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "A stickman character is now a successful entrepreneur, confidently signing documents in a modern office.",
+            "action": "Signing a contract with a confident flourish."
+          }
+        ],
+        "environment": "A sleek, modern office with large windows and a view of a city skyline.",
+        "lighting": "Professional and bright.",
+        "composition": "Medium shot, emphasizing professionalism and achievement.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "Tu dinero trabaja para ti, creando oportunidades y libertad."
+    },
+    {
+      "scene_number": 13,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "A graphic showing a small starting point transforming into a large, expanding circle of wealth.",
+            "action": "A small green dot growing rapidly into a large, vibrant green sphere."
+          }
+        ],
+        "environment": "An abstract, energetic space with radiating lines from the growing circle.",
+        "lighting": "Dynamic and energetic, with glowing effects.",
+        "composition": "Central focus on the expanding circle.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "Cada pequeña inversión de hoy es un futuro lleno de posibilidades."
+    },
+    {
+      "scene_number": 14,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "A stickman character holding a golden key, looking towards a bright horizon.",
+            "action": "Holding a key and looking optimistically towards the future."
+          }
+        ],
+        "environment": "A bright, sunny horizon with a path leading forward.",
+        "lighting": "Brilliant, hope-inspiring light.",
+        "composition": "Wide shot, emphasizing the journey ahead.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "¡Empieza hoy! Tu futuro financiero te espera."
+    }
+  ]
+}

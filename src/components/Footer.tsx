@@ -1,69 +1,93 @@
+"use client";
+
 import Link from "next/link";
-import { Globe, Share2, Mail, Play } from "lucide-react";
-import { AdsterraAds } from "./AdsterraAds";
-import { ADS_SCRIPTS } from "@/lib/adsConfig";
+import { Globe, Share2, Mail, Play, ShieldCheck, ArrowRight } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
+
+import { ProBannerVIP } from "./ProBannerVIP";
 
 export function Footer() {
+  const { t } = useLanguage();
   return (
-    <footer className="border-t border-gray-100 bg-white py-12">
+    <footer className="border-t border-white/5 bg-black/20 py-24">
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-4">
-          <div className="col-span-1 md:col-span-2">
+        <ProBannerVIP />
+        <div className="grid grid-cols-1 gap-16 md:grid-cols-12 mt-20">
+          
+          <div className="md:col-span-4">
             <Link 
               href="/" 
-              className="flex items-center gap-2 mb-4 transition-transform hover:scale-105 active:scale-95 origin-left group"
+              className="flex items-center gap-3 mb-8 group"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/20 group-hover:shadow-blue-500/30 transition-shadow">
-                <Play size={16} fill="currentColor" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 text-white shadow-lg transition-all duration-300 group-hover:scale-110">
+                <Play size={20} fill="currentColor" />
               </div>
-              <img 
-                src="/logo.png" 
-                alt="Vytrixe" 
-                className="h-8 w-auto" 
-              />
+              <span className="text-2xl font-black tracking-tight text-white uppercase italic">
+                Vytrixe
+              </span>
             </Link>
-            <p className="max-w-xs text-sm leading-relaxed text-gray-500">
-              The fastest and most reliable way to download videos from TikTok, Instagram, YouTube, Facebook and Pinterest with Vytrixe. High quality, zero clutter.
+            <p className="max-w-xs text-sm leading-relaxed text-gray-500 font-medium">
+              {t("footer_desc")}
             </p>
+            <div className="mt-8 flex items-center gap-4">
+              {[Globe, Share2, Mail, Play].map((Icon, i) => (
+                <Link key={i} href="#" className="h-10 w-10 flex items-center justify-center rounded-full bg-white/5 text-gray-500 hover:bg-white hover:text-black transition-all">
+                  <Icon size={18} />
+                </Link>
+              ))}
+            </div>
           </div>
-          <div>
-            <h4 className="mb-4 text-sm font-bold uppercase tracking-wider text-gray-900">Platforms</h4>
-            <ul className="space-y-2 text-sm text-gray-500">
-              <li><Link href="/download-tiktok-video" className="hover:text-blue-600">TikTok Downloader</Link></li>
-              <li><Link href="/download-instagram-video" className="hover:text-blue-600">Instagram Downloader</Link></li>
-              <li><Link href="/download-youtube-video" className="hover:text-blue-600">YouTube Downloader</Link></li>
-              <li><Link href="/download-facebook-video" className="hover:text-blue-600">Facebook Downloader</Link></li>
-              <li><Link href="/download-pinterest-video" className="hover:text-blue-600">Pinterest Downloader</Link></li>
+
+          <div className="md:col-span-2">
+            <h4 className="mb-6 text-[11px] font-black uppercase tracking-[0.2em] text-white">{t("footer_solutions")}</h4>
+            <ul className="space-y-4 text-sm text-gray-500 font-bold">
+              <li><Link href="/tiktok-downloader-no-watermark" className="hover:text-blue-500 transition-colors">{t("footer_tiktok_pro")}</Link></li>
+              <li><Link href="/download-youtube-video" className="hover:text-blue-500 transition-colors">{t("footer_yt_converter")}</Link></li>
+              <li><Link href="/download-audio" className="hover:text-blue-500 transition-colors">{t("footer_audio_only")}</Link></li>
+              <li><Link href="/facebook-video-downloader" className="hover:text-blue-500 transition-colors">{t("footer_fb_saver")}</Link></li>
+              <li><Link href="/pinterest-video-downloader" className="hover:text-blue-500 transition-colors">{t("footer_pin_hd")}</Link></li>
             </ul>
           </div>
-          <div>
-            <h4 className="mb-4 text-sm font-bold uppercase tracking-wider text-gray-900">Legal</h4>
-            <ul className="space-y-2 text-sm text-gray-500">
-              <li><Link href="/terms" className="hover:text-blue-600">Terms of Service</Link></li>
-              <li><Link href="/privacy" className="hover:text-blue-600">Privacy Policy</Link></li>
-              <li><Link href="/cookies" className="hover:text-blue-600">Cookie Policy</Link></li>
-              <li><Link href="/contact" className="hover:text-blue-600">Contact Us</Link></li>
+
+          <div className="md:col-span-2">
+            <h4 className="mb-6 text-[11px] font-black uppercase tracking-[0.2em] text-white">{t("footer_company")}</h4>
+            <ul className="space-y-4 text-sm text-gray-500 font-bold">
+              <li><Link href="#" className="hover:text-blue-500 transition-colors">{t("footer_about")}</Link></li>
+              <li><Link href="#" className="hover:text-blue-500 transition-colors">{t("footer_status_menu")}</Link></li>
+              <li><Link href="#" className="hover:text-blue-500 transition-colors">{t("footer_network")}</Link></li>
+              <li><Link href="#" className="hover:text-blue-500 transition-colors">{t("footer_api")}</Link></li>
             </ul>
+          </div>
+
+          <div className="md:col-span-4">
+            <div className="rounded-3xl bg-white/5 border border-white/5 p-8 backdrop-blur-xl">
+              <h4 className="mb-4 text-sm font-black text-white">{t("footer_system_status")}</h4>
+              <div className="flex items-center gap-3 text-green-500 mb-6">
+                <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-xs font-black uppercase tracking-widest text-[10px]">{t("footer_operational")}</span>
+              </div>
+              <p className="text-[11px] text-gray-500 font-bold leading-relaxed mb-6">
+                {t("footer_system_desc")}
+              </p>
+              <div className="flex items-center gap-2 text-white/40 text-[10px] font-black uppercase tracking-widest">
+                <ShieldCheck size={14} /> {t("footer_secure")}
+              </div>
+            </div>
           </div>
         </div>
         
-        <AdsterraAds 
-          zoneId={ADS_SCRIPTS.BANNER_BOTTOM.key} 
-          format={ADS_SCRIPTS.BANNER_BOTTOM.format}
-          minHeight={ADS_SCRIPTS.BANNER_BOTTOM.minHeight}
-          className="mt-12 opacity-80"
-        />
-        <div className="mt-12 flex flex-col items-center justify-between border-t border-gray-50 pt-8 sm:flex-row">
-          <p className="text-xs text-gray-400">
-            © {new Date().getFullYear()} Vytrixe Downloader. All rights reserved.
+        <div className="mt-24 flex flex-col items-center justify-between border-t border-white/5 pt-12 sm:flex-row">
+          <p className="text-[10px] font-black text-gray-600 uppercase tracking-[0.2em]">
+            © {new Date().getFullYear()} {t("footer_copyright")}
           </p>
-          <div className="mt-4 flex items-center gap-6 sm:mt-0">
-            <Globe size={18} className="text-gray-400 hover:text-blue-400 cursor-pointer" />
-            <Share2 size={18} className="text-gray-400 hover:text-gray-900 cursor-pointer" />
-            <Mail size={18} className="text-gray-400 hover:text-red-400 cursor-pointer" />
+          <div className="mt-6 flex items-center gap-8 sm:mt-0">
+            <Link href="/privacy" className="text-[10px] font-black text-gray-600 hover:text-white transition-colors uppercase tracking-[0.2em]">{t("footer_privacy")}</Link>
+            <Link href="/privacy" className="text-[10px] font-black text-gray-600 hover:text-white transition-colors uppercase tracking-[0.2em]">{t("footer_terms")}</Link>
+            <Link href="/cookies" className="text-[10px] font-black text-gray-600 hover:text-white transition-colors uppercase tracking-[0.2em]">{t("footer_cookbooks")}</Link>
           </div>
         </div>
       </div>
     </footer>
   );
 }
+

@@ -1,5 +1,5 @@
 /**
- * VYTRIXE Analytics Utility
+ * Vytrixe Analytics Utility
  * Dynamically injects Google Analytics 4 (GA4) scripts only after user consent.
  */
 
@@ -29,5 +29,5 @@ export const initGA = () => {
   `;
   document.head.appendChild(script2);
 
-  console.log("🛡️ VYTRIXE: Analytics initialized via user consent.");
+  console.log("🛡️ Vytrixe: Analytics initialized via user consent.");
 };

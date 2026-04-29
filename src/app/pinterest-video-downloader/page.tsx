@@ -1,103 +1,135 @@
 import { SEOPage } from "@/components/SEOPage";
+import { JsonLd } from "@/components/JsonLd";
 
 export const metadata = {
-  title: "Pinterest Video Downloader - Save Pins & GIFs | VYTRIXE",
-  description: "Download Pinterest videos and GIFs for free in HD quality. VYTRIXE is the fastest Pinterest video downloader online. No registration, no apps.",
+  title: "Pinterest Video Downloader - Save Pins & GIFs | Vytrixe",
+  description: "Download Pinterest videos for free in high quality. Vytrixe is the fastest Pinterest downloader. Save Pins, Stories, and GIFs instantly.",
 };
 
 const FAQ_DATA = [
   {
-    question: "How do I download a Pinterest video on my mobile phone?",
-    answer: "Copy the Pin link from the Pinterest app, visit VYTRIXE.com, paste the link in the search bar, and click download. The file will be saved to your device."
+    question: "How do I download a video from Pinterest?",
+    answer: "Copy the link of the Pinterest video Pin, paste it into our search bar at Vytrixe, and click the download button to save it locally."
   },
   {
-    question: "Can I download Pinterest GIFs as well?",
-    answer: "Yes, VYTRIXE supports both video and animated GIF extraction from Pinterest."
+    question: "Does it work for Pinterest GIFs?",
+    answer: "Yes, our downloader can fetch GIFs and save them as high-quality MP4 files or original animated images."
   },
   {
-    question: "Is there any limit to how many Pins I can save?",
-    answer: "No, you can download as many Pinterest videos as you like, for free and without any limits."
+    question: "Is there a limit on Pinterest downloads?",
+    answer: "No, Vytrixe allows unlimited Pinterest video downloads with no daily or monthly caps."
   },
   {
-    question: "Do I need to log in to my Pinterest account?",
-    answer: "No, you can download public Pins anonymously without needing an account."
+    question: "Is it safe to download content from Pinterest?",
+    answer: "Yes, we use SSL encryption and do not store any user data or download history, ensuring your experience is private and secure."
   }
 ];
 
 export default function PinterestVideoDownloader() {
-  return (
-    <SEOPage
-      platform="Pinterest"
-      title="Pinterest Video Downloader"
-      subtitle="Save Pinterest videos and GIFs in HD quality for free."
-      faqData={FAQ_DATA}
-      content={
-        <div className="space-y-12">
-          <section>
-            <h1 className="text-4xl font-extrabold text-gray-900 mb-6">Pinterest Video Downloader - Save Inspiration Instantly</h1>
-            <p className="text-lg text-gray-600 leading-relaxed">
-              Pinterest is a visual discovery engine for finding ideas like recipes, home and style inspiration, and more. With millions of creative videos and GIFs, it’s a goldmine for inspiration. Our specialized **Pinterest video downloader** allows you to archive any public pin in high definition. **VYTRIXE** is the fastest and most reliable **free video downloader online** for creative enthusiasts.
-            </p>
-            <p className="mt-6 text-gray-600">
-              **Paste your video link above to start downloading** right now. Archive your vision boards and creative projects with one click.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">How to Save Pinterest Videos</h2>
-            <div className="space-y-6 text-gray-600">
-              <p>Archiving your favorite creative content is simple with our three-step process:</p>
-              <ul className="list-disc pl-6 space-y-4">
-                <li><strong>Copy Link:</strong> Find a video Pin on Pinterest and copy its URL.</li>
-                <li><strong>Paste Link:</strong> Enter the URL into the search box on VYTRIXE.</li>
-                <li><strong>Download:</strong> Click the button and save the HD MP4 or GIF file.</li>
-              </ul>
-            </div>
-          </section>
-
-          <section>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6 font-serif underline decoration-orange-500">Why Use VYTRIXE for Pinterest?</h2>
-            <p className="mb-8 text-gray-600">VYTRIXE is designed for those who value their creative archies. We provide the highest fidelity downloads with zero overhead.</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="p-8 bg-orange-50 rounded-3xl border border-orange-100">
-                <h4 className="font-bold text-orange-900">Original Resolution</h4>
-                <p className="text-sm text-orange-800 leading-relaxed">We extract the raw original file from Pinterest's servers, ensuring your inspiration looks as good as the original.</p>
-              </div>
-              <div className="p-8 bg-orange-50 rounded-3xl border border-orange-100">
-                <h4 className="font-bold text-orange-900">No Account Needed</h4>
-                <p className="text-sm text-orange-800 leading-relaxed">Save your Pins anonymously. We don't require any personal data or social media logins.</p>
-              </div>
-            </div>
-          </section>
-
-          <section className="bg-gray-50 py-12 px-10 rounded-[50px] border border-gray-100 text-center">
-            <h3 className="text-2xl font-bold mb-6">Archive GIFS and Short Clips</h3>
-            <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              In addition to standard video, many Pinterest users love saving high-quality animated GIFs for their digital mood boards. Our **pinterest video downloader** handles both formats with ease. Whether it’s a slow-motion recipe clip or a looping home decor animation, VYTRIXE ensures you have it saved forever.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">FAQ</h2>
-            <div className="space-y-6">
-              {FAQ_DATA.map((faq, i) => (
-                <div key={i} className="p-8 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
-                  <h4 className="font-bold text-gray-900 mb-2">{faq.question}</h4>
-                  <p className="text-sm text-gray-600 leading-relaxed">{faq.answer}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="opacity-50 text-[10px] leading-tight pt-20">
-            <p>
-              SEO Content Density Block: Looking for the best pinterest video downloader? VYTRIXE is the premier choice for high-speed, secure, and reliable pinterest downloader services online. Save pinterest videos and gifs for free in HD quality. Our engine is optimized for USA keyword rankings to help YOU find the easiest path to your favorite creative content. Whether you need to save recipe videos or home decor hacks, our tool handles it all instantly. Experience the fastest pinterest video download service without any registration or login requirements. We support all platforms and devices including Android, iOS, and PC workstations. Rank for pinterest video downloader, save pinterest video, and pinterest gif download keywords. Join the millions of creators who rely on VYTRIXE for their daily archival needs. We prioritize your privacy and download speed above all else. Trust the original tool for your visual archiving.
-              Additional Word Count: We provide long-form guides (1200+ words) to ensure our users have all the information they need. Pinterest's server architecture is unique but our engine simplifies it for you. Enjoy the ultimate free video downloader in 2026.
-            </p>
-          </section>
-        </div>
+  const howToSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "How to Download Pinterest Videos and Pins",
+    "description": "Learn how to save high-quality Pinterest videos to your device using Vytrixe.",
+    "step": [
+      {
+        "@type": "HowToStep",
+        "name": "Copy Pin Link",
+        "text": "Open Pinterest, find the video Pin, and copy its link from the browser bar or sharing menu."
+      },
+      {
+        "@type": "HowToStep",
+        "name": "Paste in Vytrixe",
+        "text": "Go to the Vytrixe Pinterest downloader and paste the link into the input box."
+      },
+      {
+        "@type": "HowToStep",
+        "name": "Download Video",
+        "text": "Press the download button and save the resulting MP4 file."
       }
-    />
+    ]
+  };
+
+  return (
+    <>
+      <JsonLd data={howToSchema} />
+      <SEOPage
+        platform="Pinterest"
+        title="Pinterest Video Downloader"
+        subtitle="Save Pinterest videos and GIFs in HD quality for free."
+        faqData={FAQ_DATA}
+        content={
+          <div className="space-y-12">
+            <section>
+              <h1 className="text-4xl font-extrabold text-gray-900 mb-6">Pinterest Video Downloader - Save Inspiration Instantly</h1>
+              <p className="text-lg text-gray-600 leading-relaxed">
+                Pinterest is a goldmine of creative ideas, DIY tutorials, and stunning visual stories. While the platform is great for discovery, downloading high-quality videos for offline viewing isn't built into their core feature set. Vytrixe provides the most reliable **Pinterest video downloader**, allowing you to bridge that gap and save any public Pin in HD quality.
+              </p>
+              <p className="mt-6 text-gray-600">
+                **Start saving your favorite Pins now** by pasting the link above. Join the thousands of users who trust Vytrixe as their primary **free video downloader online**.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">How to use Vytrixe for Pinterest Downloads</h2>
+              <p className="mb-6 text-gray-600">Follow these three quick steps to get your Pinterest content instantly:</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <div className="bg-orange-50 p-8 rounded-3xl border border-orange-100">
+                  <h4 className="font-bold text-orange-900">1. Copy Link</h4>
+                  <p className="text-sm text-orange-700 mt-2">Find the video Pin on Pinterest and click the Share icon to 'Copy Link'.</p>
+                </div>
+                <div className="bg-orange-50 p-8 rounded-3xl border border-orange-100">
+                  <h4 className="font-bold text-orange-900">2. Paste Link</h4>
+                  <p className="text-sm text-orange-700 mt-2">Open Vytrixe.com and paste the URL into the Pinterest search field.</p>
+                </div>
+                <div className="bg-orange-50 p-8 rounded-3xl border border-orange-100">
+                  <h4 className="font-bold text-orange-900">3. Save Video</h4>
+                  <p className="text-sm text-orange-700 mt-2">Wait for the engine to fetch the Pin and click the download button.</p>
+                </div>
+              </div>
+            </section>
+
+            <section>
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">Why Choose Vytrixe?</h2>
+              <div className="space-y-6">
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 h-10 w-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold">★</div>
+                  <div>
+                    <h4 className="font-bold">Original Quality</h4>
+                    <p className="text-sm text-gray-600">We don't compress your files. You get the original high-bitrate MP4 file as uploaded to Pinterest.</p>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 h-10 w-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold">★</div>
+                  <div>
+                    <h4 className="font-bold">Lightning Fast</h4>
+                    <p className="text-sm text-gray-600">Our servers are optimized for Pinterest's CDN, ensuring your downloads start in under 3 seconds.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className="bg-orange-600 text-white p-12 rounded-[50px]">
+              <h3 className="text-2xl font-bold mb-4">The Best Pinterest Video Downloader of 2026</h3>
+              <p className="text-orange-50 leading-relaxed">
+                Vytrixe is recognized globally as the fastest and most stable **Pinterest video downloader** on the market. Our commitment to quality and user experience means we are constantly innovating to stay ahead of platform technical changes. Save your creative legacy today.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-3xl font-bold text-gray-900 mb-8">FAQ</h2>
+              <div className="space-y-6">
+                {FAQ_DATA.map((faq, i) => (
+                  <div key={i} className="border-b pb-8">
+                    <h4 className="text-lg font-bold text-gray-900 font-serif">{faq.question}</h4>
+                    <p className="mt-4 text-gray-600 leading-relaxed">{faq.answer}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        }
+      />
+    </>
   );
 }
-

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://167.86.74.3:3001";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 export interface VideoFormat {
   url: string;
@@ -8,6 +8,7 @@ export interface VideoFormat {
   quality: string;
   filesize: number;
   format_id: string;
+  premium?: boolean;
 }
 
 export interface VideoInfo {
@@ -20,6 +21,7 @@ export interface VideoInfo {
 }
 
 export async function getVideoInfo(videoUrl: string): Promise<VideoInfo> {
+  console.log("🔍 [Vytrixe Frontend] Fetching info from:", API_URL);
   try {
     const response = await axios.post(`${API_URL}/info`, { url: videoUrl });
     return response.data;
@@ -29,16 +31,36 @@ export async function getVideoInfo(videoUrl: string): Promise<VideoInfo> {
   }
 }
 
-export async function downloadVideo(videoUrl: string, formatId: string): Promise<{ filePath: string; fileName: string }> {
-  // This function is now mostly used for the proxy download in route.ts
-  // However, with the VPS, we can either proxy it or return the direct link.
-  // The user wants a robust system, so we'll keep the API signature but call the VPS.
+export async function downloadVideo(
+  videoUrl: string, 
+  format?: string, 
+  quality?: string
+): Promise<{ downloadUrl: string; filename: string }> {
   try {
-    const response = await axios.post(`${API_URL}/download`, { url: videoUrl, formatId });
-    return response.data;
+    // Validate URL before sending
+    if (!videoUrl || !videoUrl.startsWith("http")) {
+      throw new Error("Pega un enlace válido");
+    }
+
+    const payload = { 
+      url: videoUrl, 
+      formatId: format || "best",
+      qualityLabel: quality || "best"
+    };
+
+    // Call the advanced backend directly
+    const response = await axios.post(`${API_URL}/download`, payload);
+    return {
+      downloadUrl: `${API_URL}${response.data.url}`,
+      filename: response.data.fileName
+    };
   } catch (error: any) {
-    console.error("Error downloading video:", error);
-    throw new Error(error.response?.data?.error || "Download failed");
+    const errorMsg = error.response?.data?.error || error.message || "Error descargando";
+    console.error("AXIOS FULL ERROR:", JSON.stringify(error.response?.data, null, 2) || error.message);
+    
+    const customError = new Error(errorMsg) as any;
+    customError.details = error.response?.data?.details || "";
+    throw customError;
   }
 }
 

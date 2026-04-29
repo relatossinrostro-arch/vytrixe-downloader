@@ -1,11 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "standalone",
-  serverExternalPackages: ["child_process"],
-  experimental: {
-    // appDir: true, // App Router is default in Next 14+
+  // Required for @xenova/transformers and ONNX Runtime to work in NextJS API Routes
+  serverExternalPackages: ["@xenova/transformers", "onnxruntime-node", "wavefile"],
+  images: {
+    unoptimized: true, 
   },
+  allowedDevOrigins: ["192.168.0.235"],
 };
 
 export default nextConfig;

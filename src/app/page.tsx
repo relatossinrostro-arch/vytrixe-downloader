@@ -8,8 +8,14 @@ import { Hero } from "@/components/Hero";
 import { ResultCard } from "@/components/ResultCard";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorAlert } from "@/components/ErrorAlert";
+import { TrendingGrid } from "@/components/TrendingGrid";
+import { HowItWorks } from "@/components/HowItWorks";
+import { JsonLd } from "@/components/JsonLd";
 import { getVideoInfo } from "@/lib/video";
 import type { VideoInfo } from "@/lib/video";
+import { AdsterraAds } from "@/components/AdsterraAds";
+import { ADS_SCRIPTS } from "@/lib/adsConfig";
+import { PremiumBanner } from "@/components/PremiumBanner";
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
@@ -17,16 +23,31 @@ export default function Home() {
   const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
   const [videoUrl, setVideoUrl] = useState("");
 
+  const schemaData = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Vytrixe",
+    "operatingSystem": "All",
+    "applicationCategory": "MultimediaApplication",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "ratingCount": "12500"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0.00",
+      "priceCurrency": "USD"
+    }
+  };
+
   const handleSearch = async (url: string) => {
-    // 0. Store the original search URL
     setVideoUrl(url);
-    // 1. URL Validation
     if (!url.includes("http")) {
       setError("Please enter a valid URL including http:// or https://");
       return;
     }
 
-    // 2. Strict Domain Whitelist
     const allowedDomains = [
       "tiktok.com",
       "instagram.com",
@@ -68,21 +89,30 @@ export default function Home() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex min-h-screen flex-col bg-[var(--background)]">
+      <JsonLd data={schemaData} />
       <Navbar />
-      
-      <div className="bg-red-600 text-white p-6 font-black text-center text-lg shadow-xl relative z-50">
-        🚀 TAILWIND CSS V3 TEST: IF THIS IS BRIGHT RED WITH WHITE BOLD TEXT, STYLES ARE WORKING!
-      </div>
       
       <main className="flex-1">
         {!videoInfo && !loading && (
-          <div className="max-w-6xl mx-auto">
-            <Hero onSearch={handleSearch} isLoading={loading} />
-          </div>
+          <>
+            <Hero onSearch={handleSearch} isLoading={loading} externalUrl={videoUrl} />
+            <div className="max-w-6xl mx-auto px-4 py-8">
+              <AdsterraAds 
+                zoneId={ADS_SCRIPTS.BANNER_TOP.key}
+                format={ADS_SCRIPTS.BANNER_TOP.format}
+                minHeight="90px"
+                className="rounded-3xl border border-white/5 shadow-2xl"
+              />
+            </div>
+          </>
         )}
         
-        {loading && <LoadingState />}
+        {loading && (
+          <div className="py-24">
+            <LoadingState />
+          </div>
+        )}
         
         {error && (
           <div className="max-w-3xl mx-auto px-4 py-8">
@@ -91,35 +121,22 @@ export default function Home() {
         )}
         
         {videoInfo && !loading && (
-          <div className="max-w-5xl mx-auto">
+          <div className="max-w-5xl mx-auto py-12">
             <ResultCard info={videoInfo} videoUrl={videoUrl} onReset={reset} />
           </div>
         )}
 
-        {/* Home Features Section */}
+        {/* Global Features Section */}
         {!videoInfo && !loading && (
-          <section className="bg-gray-50/50 py-32 border-t border-gray-100">
-            <div className="container mx-auto px-4 max-w-6xl">
-              <div className="text-center mb-20">
-                <h2 className="text-4xl font-black text-gray-900 tracking-tight">Why choose VYTRIXE?</h2>
-                <p className="text-gray-500 mt-4 text-lg">The world's most advanced video downloader platform.</p>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {[
-                  { title: "Ultra Fast", desc: "Our servers process downloads in record time.", icon: "⚡" },
-                  { title: "High Quality", desc: "Download in HD, 4K and even 8K when available.", icon: "🌟" },
-                  { title: "No Registration", desc: "No account needed. Just paste the link and download.", icon: "🛡️" }
-                ].map((feature, i) => (
-                  <div key={i} className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                    <div className="text-4xl mb-4">{feature.icon}</div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{feature.title}</h3>
-                    <p className="text-gray-500 text-sm leading-relaxed">{feature.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
+          <>
+            <HowItWorks />
+            <TrendingGrid onSelect={(url) => {
+              setVideoUrl(url);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+              handleSearch(url);
+            }} />
+            <PremiumBanner />
+          </>
         )}
       </main>
 
@@ -127,4 +144,5 @@ export default function Home() {
     </div>
   );
 }
+
 

@@ -9,7 +9,9 @@ export function AdNative() {
 
   useEffect(() => {
     // 1. Consent Validation
-    if (getCookieConsentValue("vytrixe_cookie_consent") !== "true") return;
+    const consent = typeof window !== "undefined" ? localStorage.getItem("vytrixe-cookie-consent") : null;
+    if (consent !== "true") return;
+    
     if (!containerRef.current) return;
 
     // 2. Duplicate Check
@@ -24,7 +26,7 @@ export function AdNative() {
       script.id = ADS_SCRIPTS.NATIVE.id;
       
       containerRef.current.appendChild(script);
-      console.log(`💰 VYTRIXE: Native Ad [${ADS_SCRIPTS.NATIVE.key}] injected.`);
+      console.log(`💰 Vytrixe: Native Ad [${ADS_SCRIPTS.NATIVE.key}] injected.`);
     } catch (err) {
       console.error("Adsterra Native Error:", err);
     }
@@ -39,9 +41,9 @@ export function AdNative() {
       
       <div 
         ref={containerRef} 
-        className="min-h-[250px] w-full rounded-3xl bg-gray-50/50 border border-gray-100 p-4 transition-all hover:bg-gray-50 flex items-center justify-center text-gray-300 italic text-sm"
+        className="min-h-[250px] w-full rounded-[2.5rem] bg-white/5 border border-white/10 p-4 transition-all flex items-center justify-center text-gray-500 italic text-xs font-black uppercase tracking-widest"
       >
-        Waiting for content...
+        Waiting for Vytrixe Engine...
       </div>
     </div>
   );

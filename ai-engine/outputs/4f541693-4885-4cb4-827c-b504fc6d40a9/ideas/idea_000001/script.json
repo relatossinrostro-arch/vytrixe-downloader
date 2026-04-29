@@ -1,0 +1,212 @@
+{
+  "scenes": [
+    {
+      "scene_number": 1,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "A stylized stick figure woman, looking stressed, with dark circles under her eyes, wearing simple office attire.",
+            "action": "She is drowning in a sea of floating credit card bills and student loan statements."
+          }
+        ],
+        "environment": "A chaotic, dark room filled with crumpled bills and financial papers.",
+        "lighting": "Dim, oppressive lighting with harsh shadows.",
+        "composition": "Medium shot, emphasizing the character's overwhelm.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "Cansado de que el dinero te controle? Tu mentalidad es la llave."
+    },
+    {
+      "scene_number": 2,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "The same stick figure woman, looking dejected, sitting at a desk piled high with bills.",
+            "action": "She is holding a pen, about to sign another payment, her shoulders slumped."
+          }
+        ],
+        "environment": "A drab, small desk in a dimly lit apartment.",
+        "lighting": "Gloomy, low-key lighting.",
+        "composition": "Close-up on the character's face and the pile of bills.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "Trabajando duro, pero el progreso parece un espejismo, ¿verdad?"
+    },
+    {
+      "scene_number": 3,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "Stylized coins and bills are shown as sharp, aggressive spikes, piercing a large red dollar sign.",
+            "action": "The spikes are actively piercing the dollar sign."
+          }
+        ],
+        "environment": "A stark, white background with abstract red lines.",
+        "lighting": "Harsh, direct lighting highlighting the aggression.",
+        "composition": "Abstract close-up.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "Cada pago, un mordisco más a tus sueños."
+    },
+    {
+      "scene_number": 4,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "The stick figure woman is shown with a question mark above her head, surrounded by confusing financial charts and numbers.",
+            "action": "She is looking bewildered, gesturing helplessly."
+          }
+        ],
+        "environment": "An abstract, chaotic space filled with swirling financial data.",
+        "lighting": "Confusing, multi-directional lighting.",
+        "composition": "Wide shot to show the extent of her confusion.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "Si sigues haciendo lo mismo, obtendrás lo mismo."
+    },
+    {
+      "scene_number": 5,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "A bright, glowing lightbulb appears above the head of the stick figure woman.",
+            "action": "The lightbulb suddenly illuminates."
+          }
+        ],
+        "environment": "The same drab room from Scene 2, but now with a spotlight on the character.",
+        "lighting": "A sudden, bright, warm spotlight.",
+        "composition": "Close-up on the character's head, with the lightbulb prominently displayed.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "Pero, ¿y si te dijera que existe un secreto?"
+    },
+    {
+      "scene_number": 6,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "A stack of coins and bills is shown. From the top coin, a small green sprout is emerging.",
+            "action": "The sprout is growing upwards from the coin."
+          }
+        ],
+        "environment": "A clean, minimalist background with a few stylized plants.",
+        "lighting": "Soft, natural lighting.",
+        "composition": "Medium shot, focusing on the money and the sprout.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "Un principio simple que cambia todo: ¡Págate a ti primero!"
+    },
+    {
+      "scene_number": 7,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "Two stylized piggy banks are shown. One is labeled 'Gastos' (Expenses) and is overflowing with bills. The other is labeled 'Ahorro' (Savings) and has a small, healthy plant growing out of it.",
+            "action": "The 'Gastos' piggy bank has bills spilling out, while the 'Ahorro' piggy bank has a plant growing."
+          }
+        ],
+        "environment": "A split background: one side chaotic, the other serene.",
+        "lighting": "Contrasting lighting: dark on the left, bright on the right.",
+        "composition": "Eye-level shot, showing both piggy banks clearly.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "Antes de pagar las facturas, antes de cualquier gasto, destina una porción a tu futuro."
+    },
+    {
+      "scene_number": 8,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "A stylized chart showing a small bar representing current income. A portion of it is being redirected to a growing bar labeled 'Ahorro'.",
+            "action": "An arrow shows money flowing from 'Ingresos' to 'Ahorro'."
+          }
+        ],
+        "environment": "A clean, simple infographic style background.",
+        "lighting": "Bright, clear lighting.",
+        "composition": "Top-down view of the chart.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "Piensa en ello como tu semilla de riqueza, ¡plantada antes que nada!"
+    },
+    {
+      "scene_number": 9,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "A stylized visual of a snowball rolling down a hill, gathering size and momentum. It is labeled 'Interés Compuesto'.",
+            "action": "The snowball is growing larger as it rolls."
+          }
+        ],
+        "environment": "A stylized snowy hill with a clear path.",
+        "lighting": "Bright, crisp winter lighting.",
+        "composition": "Dynamic angle showing the snowball's descent.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "Esa pequeña cantidad, con el tiempo, se convierte en una montaña de posibilidades gracias al interés compuesto."
+    },
+    {
+      "scene_number": 10,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "The stick figure woman is now shown with a confident smile, holding a small plant that is growing rapidly. The plant has coins as leaves.",
+            "action": "She is watering the plant with a small watering can."
+          }
+        ],
+        "environment": "A bright, sunny room with a window showing a pleasant view.",
+        "lighting": "Warm, inviting natural light.",
+        "composition": "Medium shot, focusing on the character and her thriving plant.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "No es magia, es disciplina y visión de futuro."
+    },
+    {
+      "scene_number": 11,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "The same stick figure woman, now dressed professionally, is sitting in a modern, bright office, working on a laptop. A small, thriving plant sits on her desk.",
+            "action": "She is typing efficiently and looking pleased."
+          }
+        ],
+        "environment": "A clean, modern, sunlit office space.",
+        "lighting": "Bright, optimistic natural light.",
+        "composition": "Wide shot to showcase her new environment.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "Lo que antes era una carga, ahora es el combustible de tu libertad."
+    },
+    {
+      "scene_number": 12,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "A stylized map with a clear, golden path leading from a starting point (labeled 'Deudas') to a treasure chest (labeled 'Futuro Financiero').",
+            "action": "The path is illuminated and inviting."
+          }
+        ],
+        "environment": "An abstract, adventurous background with subtle textures.",
+        "lighting": "Golden, adventurous lighting.",
+        "composition": "Overhead view of the map.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "Tu futuro financiero no es un destino lejano, es un mapa que tú mismo diseñas."
+    },
+    {
+      "scene_number": 13,
+      "image_prompt": {
+        "subjects": [
+          {
+            "description": "The stick figure woman, now exuding confidence, is standing tall with a glowing green chart showing upward growth behind her.",
+            "action": "She is pointing forward with a determined expression."
+          }
+        ],
+        "environment": "A stylized, abstract landscape of growth and opportunity.",
+        "lighting": "Bright, inspiring, and energetic lighting.",
+        "composition": "Hero shot, full body.",
+        "style": "Dynamic hand-drawn 2D webcomic sketch style, thick expressive black ink outlines, vibrant minimalist color palette for highlights, clean shading, white background with glowing accents."
+      },
+      "narration": "Empieza hoy. Tu yo del futuro te lo agradecerá."
+    }
+  ]
+}

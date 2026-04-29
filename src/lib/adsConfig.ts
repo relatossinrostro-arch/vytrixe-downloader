@@ -1,5 +1,5 @@
 /**
- * VYTRIXE Adsterra Configuration (Scripts)
+ * Vytrixe Adsterra Configuration (Scripts)
  * Centralized registry for ad placement Zone IDs and tokens.
  */
 
@@ -18,6 +18,22 @@ export const ADS_SCRIPTS = {
     format: "728x90",
     id: "adsterra-banner-mid",
     minHeight: "90px"
+  },
+
+  // Sidebar Ad 1 (Result Page)
+  SIDEBAR_1: {
+    key: "YOUR_ADSTERRA_KEY_HERE",
+    format: "300x250",
+    id: "adsterra-sidebar-1",
+    minHeight: "250px"
+  },
+
+  // Sidebar Ad 2 (Result Page)
+  SIDEBAR_2: {
+    key: "YOUR_ADSTERRA_KEY_HERE",
+    format: "160x600",
+    id: "adsterra-sidebar-2",
+    minHeight: "600px"
   },
 
   // Bottom Banner (Pre-Footer)

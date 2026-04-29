@@ -1,53 +1,113 @@
+"use client";
+
+import React from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { ShieldCheck, Lock, Eye, FileText, Globe } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
-export const metadata = {
-  title: "Privacy Policy - VYTRIXE",
-  description: "Privacy policy and data usage information for VYTRIXE.",
-};
+export default function PrivacyPage() {
+  const { language } = useLanguage();
 
-export default function Privacy() {
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="min-h-screen bg-[#050505] text-white overflow-hidden relative">
+      {/* Glow Effects */}
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none" />
+
       <Navbar />
-      <main className="flex-1 py-20">
-        <div className="container mx-auto px-4 max-w-4xl prose prose-blue lg:prose-lg">
-          <h1 className="text-4xl font-extrabold text-gray-900 border-b pb-4">Privacy Policy</h1>
-          <p className="mt-8 text-gray-600">
-            Your privacy is important to us. This Privacy Policy explains how VYTRIXE Downloader ("we", "us", or "our") collects, uses, and protects your information when you use our service.
-          </p>
 
-          <h2 className="text-2xl font-bold text-gray-900 mt-12">1. Data Collection & Analytics</h2>
-          <p className="text-gray-600">
-            We use Google Analytics to understand how visitors interact with our website. This data is collected only after you grant consent via our cookie banner. The information collected includes your IP address, browser type, and site usage patterns, which helps us improve our service.
-          </p>
+      <main className="container mx-auto px-4 py-20 relative z-10">
+        <div className="max-w-4xl mx-auto space-y-12">
+          
+          {/* Header */}
+          <div className="text-center space-y-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-widest">
+              <ShieldCheck size={14} /> Trust & Safety Verified
+            </div>
+            <h1 className="text-4xl md:text-7xl font-black uppercase tracking-tight italic leading-tight">
+              Privacy <span className="text-blue-500 not-italic">Policy</span>
+            </h1>
+            <p className="text-gray-500 font-medium tracking-widest uppercase text-xs">Last updated: April 23, 2026</p>
+          </div>
 
-          <h2 className="text-2xl font-bold text-gray-900 mt-12">2. Advertising</h2>
-          <p className="text-gray-600">
-            VYTRIXE may display advertisements provided by third-party ad networks. These networks may use cookies to serve personalized ads based on your previous visits to our site or other sites on the internet. Personalized advertising is only enabled if you accept our cookie policy.
-          </p>
+          <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-[3rem] p-8 md:p-16 space-y-12 leading-relaxed text-gray-400">
+            
+            <section className="space-y-6">
+              <div className="flex items-center gap-4 text-white">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
+                  <Eye size={24} />
+                </div>
+                <h2 className="text-2xl font-black uppercase tracking-tighter italic">1. Data Architecture</h2>
+              </div>
+              <p className="text-sm md:text-base">
+                At Vytrixe, we implement a **transient processing architecture**. This means we do not host or store any multimedia content you process. 
+                Our servers act as a secure bridge between the source platform and your device, ensuring total privacy during the download process.
+              </p>
+            </section>
 
-          <h2 className="text-2xl font-bold text-gray-900 mt-12">3. Video Downloads</h2>
-          <p className="text-gray-600">
-            VYTRIXE is a technical service that processes video URLs. We do not store or host any of the videos you download on our servers. All processing is done transiently to provide you with the download link.
-          </p>
+            <section className="space-y-6">
+              <div className="flex items-center gap-4 text-white">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-600 to-purple-400 flex items-center justify-center text-white shadow-lg shadow-purple-500/20">
+                  <Lock size={24} />
+                </div>
+                <h2 className="text-2xl font-black uppercase tracking-tighter italic">2. User Authentication</h2>
+              </div>
+              <p className="text-sm md:text-base">
+                When you access Vytrixe Pro via Google Login, we only retrieve essential metadata: **Full Name, Email Address, and Avatar**. 
+                This information is exclusively used to manage your premium features and profile settings. We use encryption at rest for all stored metadata via Supabase.
+              </p>
+            </section>
 
-          <h2 className="text-2xl font-bold text-gray-900 mt-12">4. User Rights (GDPR/CCPA)</h2>
-          <p className="text-gray-600">
-            Depending on your location, you may have rights regarding your personal data, including the right to access, correct, or delete any data we might have collected through analytics. You can withdraw your consent at any time by clearing your browser cookies.
-          </p>
+            <section className="space-y-6">
+              <div className="flex items-center gap-4 text-white">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-600 to-green-400 flex items-center justify-center text-white shadow-lg shadow-green-500/20">
+                  <Globe size={24} />
+                </div>
+                <h2 className="text-2xl font-black uppercase tracking-tighter italic">3. Global Compliance</h2>
+              </div>
+              <p className="text-sm md:text-base">
+                We are committed to international standards including **GDPR** (EU) and **CCPA** (USA). You have the absolute right to:
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  "Right to be Forgotten (Full Deletion)",
+                  "Right to Data Portability (Export)",
+                  "Right to Rectification (Updates)",
+                  "Right to Object to Processing"
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-2 p-4 rounded-2xl bg-white/5 border border-white/5 text-[11px] font-bold uppercase tracking-widest text-white/60">
+                    <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </section>
 
-          <h2 className="text-2xl font-bold text-gray-900 mt-12">5. Third-Party Services</h2>
-          <p className="text-gray-600">
-            Our service relies on third-party APIs and services (like Google Analytics and Ad Networks). We encourage you to review their respective privacy policies to understand how they handle data.
-          </p>
+            <section className="space-y-6">
+              <div className="flex items-center gap-4 text-white">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-yellow-600 to-orange-400 flex items-center justify-center text-white shadow-lg shadow-yellow-500/20">
+                  <FileText size={24} />
+                </div>
+                <h2 className="text-2xl font-black uppercase tracking-tighter italic">4. Third-Party Protocols</h2>
+              </div>
+              <p className="text-sm md:text-base">
+                Payment data is handled directly by **PayPal Checkout**. Vytrixe never receives or stores your credit card details. 
+                Our AI services (Gemini/Flux) process inputs in real-time and do not use your personal data for autonomous model re-training.
+              </p>
+            </section>
 
-          <h2 className="text-2xl font-bold text-gray-900 mt-12">6. Contact Information</h2>
-          <p className="text-gray-600">
-            If you have any questions regarding this Privacy Policy, please reach out via our contact page.
-          </p>
+          </div>
+
+          {/* Contact help */}
+          <div className="text-center space-y-2">
+            <p className="text-gray-500 text-xs uppercase font-black tracking-widest">Questions & Legal Inquiry</p>
+            <p className="text-blue-500 font-bold hover:underline cursor-pointer">legal@vytrixe.pro</p>
+          </div>
+
         </div>
       </main>
+
       <Footer />
     </div>
   );
