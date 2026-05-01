@@ -421,8 +421,11 @@ export const translations = {
 
     // Dashboard Perk Keys
     perk_hd: "Procesamiento HD (720p/1080p)",
+    perk_4k: "Procesamiento Ultra HD (4K/8K)",
+    perk_trans: "Transcripción IA Ilimitada",
+    perk_limit: "Sin Límites de Archivo",
     perk_ads: "Experiencia sin Anuncios",
-    perk_comm: "Uso Comercial",
+    perk_comm: "Uso Comercial Pro",
 
     // Image Generator
     img_gen_title: "Generador de Portadas IA",
