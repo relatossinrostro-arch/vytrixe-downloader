@@ -54,7 +54,6 @@ export function Navbar() {
       case "twitch": return "Twitch";
       case "soundcloud": return "SoundCloud";
       case "refine": return t("nav_refine");
-      case "ai_studio": return t("nav_ai_studio");
       default: return key;
     }
   };
