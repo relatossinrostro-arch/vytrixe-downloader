@@ -77,5 +77,12 @@ jobs:
             pm2 delete vpro-app || true
             pm2 start npm --name "vpro-app" -- start -- -p 3000
             
-            # Final Nginx restart
+            # Install Certbot and generate SSL
+            sudo apt-get update
+            sudo apt-get install -y certbot python3-certbot-nginx
+            sudo certbot --nginx -d viralauthoritypro.com -d www.viralauthoritypro.com -d api.viralauthoritypro.com --non-interactive --agree-tos --email webmaster@viralauthoritypro.com --redirect || true
+            
+            # Final Nginx restart and status check
             sudo nginx -t && sudo systemctl restart nginx
+            pm2 list
+            systemctl status nginx --no-pager
