@@ -36,26 +36,48 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           script: |
             mkdir -p /var/www/viralauthoritypro
+            chown -R root:root /var/www/viralauthoritypro
+
+      - name: Upload code to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_IP }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          source: "./*"
+          target: "/var/www/viralauthoritypro"
+          rm: true
+          exclude: "node_modules, .git, .github, .next"
+
+      - name: Run setup and restart services
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_IP }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
             cd /var/www/viralauthoritypro
-            git pull origin main || git clone git@github.com:relatossinrostro-arch/vytrixe-downloader.git .
             
-            # Setup environment
+            # Fix Nginx first to avoid crashes
+            mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled
+            cp infra/nginx.conf /etc/nginx/sites-available/viralauthoritypro
+            ln -sf /etc/nginx/sites-available/viralauthoritypro /etc/nginx/sites-enabled/
+            
+            # Setup environment and dependencies
             chmod +x scripts/setup_vps.sh
             ./scripts/setup_vps.sh
             
-            # Install & Restart Backend
+            # Backend
             cd backend && npm install
             pm2 delete vpro-api || true
             pm2 start index.js --name "vpro-api"
             
-            # Install & Restart Frontend
+            # Frontend
             cd ..
             npm install
             npm run build
             pm2 delete vpro-app || true
             pm2 start npm --name "vpro-app" -- start
             
-            # Ensure Nginx is updated
-            sudo cp infra/nginx.conf /etc/nginx/sites-available/viralauthoritypro
-            sudo ln -sf /etc/nginx/sites-available/viralauthoritypro /etc/nginx/sites-enabled/
+            # Final Nginx restart
             sudo nginx -t && sudo systemctl restart nginx
