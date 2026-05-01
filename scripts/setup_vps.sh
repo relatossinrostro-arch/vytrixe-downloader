@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ==============================================================================
-# Vytrixe Production VPS Setup Script
+# ViralAuthorityPro Production VPS Setup Script
 # ==============================================================================
 # OS: Ubuntu 22.04+ (Recommended)
 # Purpose: Full automation of Node.js, PM2, Nginx, SSL, and yt-dlp.
@@ -9,10 +9,10 @@
 
 set -e
 
-LOG_FILE="/var/log/vytrixe_setup.log"
+LOG_FILE="/var/log/viralauthoritypro_setup.log"
 exec > >(tee -a "$LOG_FILE") 2>&1
 
-echo "🚀 [1/8] Starting Vytrixe Production Setup..."
+echo "🚀 [1/8] Starting ViralAuthorityPro Production Setup..."
 
 # Ensure non-interactive installs
 export DEBIAN_FRONTEND=noninteractive
@@ -57,9 +57,9 @@ echo "PM2: $(pm2 -v)"
 echo "----------------------------------------------------"
 
 echo "NEXT STEPS (Execute manually from project root):"
-echo "1. Upload files: rsync -av . root@167.86.74.3:/var/www/vytrixe"
-echo "2. Install deps: cd /var/www/vytrixe && npm install && cd backend && npm install"
-echo "3. Start Backend: pm2 start backend/index.js --name 'vytrixe-api'"
-echo "4. Start Frontend: npm run build && pm2 start npm --name 'vytrixe-app' -- start"
-echo "5. Link SSL: sudo certbot --nginx -d vytrixe.com -d api.vytrixe.com"
+echo "1. Upload files: rsync -av . root@167.86.74.3:/var/www/viralauthoritypro"
+echo "2. Install deps: cd /var/www/viralauthoritypro && npm install && cd backend && npm install"
+echo "3. Start Backend: pm2 start backend/index.js --name 'viralauthoritypro-api'"
+echo "4. Start Frontend: npm run build && pm2 start npm --name 'viralauthoritypro-app' -- start"
+echo "5. Link SSL: sudo certbot --nginx -d viralauthoritypro.com -d api.viralauthoritypro.com"
 echo "----------------------------------------------------"

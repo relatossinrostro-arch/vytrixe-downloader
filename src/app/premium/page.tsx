@@ -33,10 +33,18 @@ export default function PremiumPage() {
   const { user, isPremium, setPremiumStatusInDB, openLoginModal } = useUser();
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<"smart" | "card">("smart");
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("yearly");
+  const [isMounted, setIsMounted] = useState(false);
+  const [paypalError, setPaypalError] = useState<string | null>(null);
 
-  const handlePaymentSuccess = async (details: any) => {
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const paypalClientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID?.trim();
+  const planAmount = billingCycle === "yearly" ? "94.99" : "14.99";
+
+  const handlePaymentSuccess = async (details: unknown) => {
     console.log("Payment Successful:", details);
     setLoading(true);
     try {
@@ -64,11 +72,11 @@ export default function PremiumPage() {
   ];
 
   const comparisons = [
-    { feature: "Download Speed", free: "Standard", pro: "Ultra Fast", icon: Zap },
-    { feature: "Video Quality", free: "Up to 1080p", pro: "4K / 8K / Ultra HD", icon: Crown },
-    { feature: "Transcription Limit", free: "5 Minutes", pro: "Unlimited", icon: Star },
-    { feature: "Interface", free: "Ad Supported", pro: "100% Ad-Free", icon: Shield },
-    { feature: "Support", free: "Standard", pro: "24/7 Priority", icon: Trophy },
+    { feature: t("feat_speed"), free: t("val_std"), pro: t("val_ultra"), icon: Zap },
+    { feature: t("feat_quality"), free: t("val_1080"), pro: t("val_4k"), icon: Crown },
+    { feature: t("feat_trans"), free: t("val_5m"), pro: t("premium_limit_none"), icon: Star },
+    { feature: t("feat_ads"), free: t("premium_ads_yes"), pro: t("premium_ads_no"), icon: Shield },
+    { feature: t("feat_support"), free: t("val_std"), pro: t("val_priority"), icon: Trophy },
   ];
 
   if (isSuccess) {
@@ -211,60 +219,45 @@ export default function PremiumPage() {
               </div>
             </motion.div>
 
-            {/* Gateway Selection & PayPal */}
+            {/* Payment Gateway */}
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 lg:p-12 space-y-10 min-h-[450px] shadow-2xl shadow-blue-500/5"
+              className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 lg:p-12 space-y-10 min-h-[450px] shadow-2xl shadow-blue-500/5 flex flex-col justify-center"
             >
-              <div className="flex bg-black/40 p-1.5 rounded-2xl border border-white/10 relative">
-                <button 
-                  onClick={() => setPaymentMethod("smart")}
-                  className={`flex-1 py-4 rounded-xl text-xs font-black uppercase tracking-[0.2em] transition-all duration-500 relative ${paymentMethod === "smart" ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]" : "text-gray-500 hover:text-gray-300"}`}
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    <Zap size={14} fill={paymentMethod === "smart" ? "black" : "none"} />
-                    Express Checkout
-                  </div>
-                  {paymentMethod === "smart" && (
-                    <motion.span layoutId="pop" className="absolute -top-2 -right-2 px-2 py-1 bg-blue-600 text-white text-[8px] rounded-md font-black">POPULAR</motion.span>
-                  )}
-                </button>
-                <button 
-                  onClick={() => setPaymentMethod("card")}
-                  className={`flex-1 py-4 rounded-xl text-xs font-black uppercase tracking-[0.2em] transition-all duration-500 relative ${paymentMethod === "card" ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]" : "text-gray-500 hover:text-gray-300"}`}
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    <ShieldCheck size={14} fill={paymentMethod === "card" ? "black" : "none"} />
-                    Direct Card
-                  </div>
-                  <motion.span className="absolute -top-2 -right-2 px-2 py-1 bg-amber-600 text-white text-[8px] rounded-md font-black">MAINTENANCE</motion.span>
-                </button>
+              <div className="text-center space-y-2">
+                <ShieldCheck size={32} className="mx-auto text-emerald-500 mb-4" />
+                <h3 className="text-xl font-black uppercase tracking-widest text-white">Secure Checkout</h3>
+                <p className="text-sm text-gray-500">Pay with PayPal, Credit, or Debit Card safely.</p>
               </div>
 
-              {paymentMethod === "card" && (
-                <div className="p-6 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-center">
-                  <p className="text-[10px] text-amber-500 font-bold uppercase tracking-widest">Maintenance</p>
-                  <p className="text-[10px] text-gray-500 mt-1">Direct card payments are temporarily unavailable. Please use Express Checkout.</p>
-                </div>
-              )}
-
-              <div className="space-y-6">
-                {process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ? (
+              <div className="space-y-6 w-full max-w-md mx-auto">
+                {isMounted && paypalClientId ? (
                   <PayPalScriptProvider options={{ 
-                    clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID
+                    clientId: paypalClientId,
+                    components: "buttons",
+                    currency: "USD",
+                    intent: "capture"
                   }}>
-                    <div className="p-4 bg-black/20 rounded-2xl border border-white/5">
+                    <div className="p-4 bg-white rounded-2xl shadow-inner">
+                      {paypalError && (
+                        <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-bold text-red-600">
+                          {paypalError}
+                        </div>
+                      )}
                       <PayPalButtons 
-                        style={{ layout: "vertical", shape: "rect", label: "pay", color: "gold" }}
+                        disabled={loading}
+                        forceReRender={[billingCycle, planAmount]}
+                        style={{ layout: "vertical", shape: "rect", label: "pay" }}
                         createOrder={(data, actions) => {
+                          setPaypalError(null);
                           return actions.order.create({
                             intent: "CAPTURE",
                             purchase_units: [{
-                              description: `Vytrixe Pro - ${billingCycle === "yearly" ? "Yearly" : "Monthly"} Plan`,
+                              description: `ViralAuthority PRO PREMIUM - ${billingCycle === "yearly" ? "Yearly" : "Monthly"} Plan`,
                               amount: {
                                 currency_code: "USD",
-                                value: billingCycle === "yearly" ? "94.99" : "14.99"
+                                value: planAmount
                               }
                             }]
                           });
@@ -274,6 +267,10 @@ export default function PremiumPage() {
                             const details = await actions.order.capture();
                             handlePaymentSuccess(details);
                           }
+                        }}
+                        onError={(err) => {
+                          console.error("PAYPAL_SDK_ERROR:", err);
+                          setPaypalError("PayPal no pudo cargar el checkout. Verifica el Client ID y el dominio autorizado.");
                         }}
                       />
                     </div>
@@ -299,7 +296,7 @@ export default function PremiumPage() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-white/[0.02]">
-                    <th className="px-8 py-6 text-sm font-black uppercase tracking-widest">Feature</th>
+                    <th className="px-8 py-6 text-sm font-black uppercase tracking-widest">{t("feat_header")}</th>
                     <th className="px-8 py-6 text-sm font-black uppercase tracking-widest text-gray-500">{t("premium_free")}</th>
                     <th className="px-8 py-6 text-sm font-black uppercase tracking-widest text-blue-500">{t("premium_pro")}</th>
                   </tr>
@@ -327,7 +324,7 @@ export default function PremiumPage() {
           <section className="relative overflow-hidden rounded-[3rem] bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-blue-600/20 border border-white/10 p-16 text-center space-y-8">
             <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent)]" />
             <h2 className="text-4xl font-black uppercase italic tracking-tighter">Everything you need, in one place.</h2>
-            <p className="text-gray-400 font-medium max-w-2xl mx-auto">Join thousands of creators using Vytrixe Pro to power their digital workflow with AI.</p>
+            <p className="text-gray-400 font-medium max-w-2xl mx-auto">Join thousands of creators using ViralAuthority PRO PREMIUM to power their digital workflow with AI.</p>
             <button className="relative px-12 py-5 bg-white text-black rounded-2xl font-black uppercase tracking-widest hover:scale-105 transition-all shadow-2xl shadow-white/10">
               Get Started Now
             </button>

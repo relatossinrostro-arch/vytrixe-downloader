@@ -14,7 +14,7 @@ export function AdPlaceholder({ slot, className = "" }: AdPlaceholderProps) {
 
   useEffect(() => {
     // Check consent state on mount and update
-    const consent = getCookieConsentValue("Vytrixe_cookie_consent");
+    const consent = getCookieConsentValue("ViralAuthority PRO PREMIUM_cookie_consent");
     setHasConsent(consent === "true");
   }, []);
   

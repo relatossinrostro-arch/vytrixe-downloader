@@ -16,7 +16,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   // Load language from localStorage on mount
   useEffect(() => {
-    const savedLang = localStorage.getItem("vytrixe_language") as Language;
+    const savedLang = localStorage.getItem("viralauthoritypro_language") as Language;
     if (savedLang && (savedLang === "en" || savedLang === "es")) {
       setLanguageState(savedLang);
     } else {
@@ -30,7 +30,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    localStorage.setItem("vytrixe_language", lang);
+    localStorage.setItem("viralauthoritypro_language", lang);
   };
 
   const t = (key: TranslationKey): string => {

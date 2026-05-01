@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "vytrixe-ai-engine"
+name = "viralauthoritypro-ai-engine"
 version = "0.1.0"
-description = "AI Content Automation Engine for Vytrixe"
+description = "AI Content Automation Engine for ViralAuthorityPro"
 authors = ["Antigravity <antigravity@google.com>"]
 
 [tool.poetry.dependencies]

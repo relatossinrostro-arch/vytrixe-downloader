@@ -8,7 +8,7 @@ export function CookieBanner() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const consent = localStorage.getItem("vytrixe-cookie-consent");
+    const consent = localStorage.getItem("viralauthoritypro-cookie-consent");
     if (!consent) {
       const timer = setTimeout(() => setIsVisible(true), 2000);
       return () => clearTimeout(timer);
@@ -16,7 +16,7 @@ export function CookieBanner() {
   }, []);
 
   const acceptCookies = () => {
-    localStorage.setItem("vytrixe-cookie-consent", "true");
+    localStorage.setItem("viralauthoritypro-cookie-consent", "true");
     setIsVisible(false);
   };
 
@@ -44,7 +44,7 @@ export function CookieBanner() {
             </div>
             
             <p className="text-[10px] leading-relaxed text-gray-400 font-medium">
-              We deploy advanced tracking protocols to optimize your <span className="text-white italic">Vytrixe Pro</span> experience. 
+              We deploy advanced tracking protocols to optimize your <span className="text-white italic">ViralAuthority PRO PREMIUM</span> experience. 
               By staying, you consent to our <Link href="/cookies" className="text-blue-500 hover:underline mx-0.5">Cookie Engine</Link> management.
             </p>
 

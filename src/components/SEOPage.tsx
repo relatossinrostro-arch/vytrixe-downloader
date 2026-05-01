@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import axios from "axios";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Hero } from "@/components/Hero";
@@ -16,6 +15,7 @@ import { VideoInfo, getVideoInfo } from "@/lib/video";
 import { ADS_SCRIPTS } from "@/lib/adsConfig";
 import { useUser } from "@/context/UserContext";
 import { ProBannerVIP } from "@/components/ProBannerVIP";
+import { ResponsibleUseNotice } from "@/components/ResponsibleUseNotice";
 
 interface SEOPageProps {
   platform: string;
@@ -26,25 +26,18 @@ interface SEOPageProps {
 }
 
 const ALL_PLATFORMS = [
-  { name: "TikTok Video", path: "/download-tiktok-video" },
-  { name: "TikTok No Watermark", path: "/tiktok-downloader-no-watermark" },
-  { name: "Free TikTok", path: "/free-tiktok-video-downloader" },
-  { name: "Instagram Reels", path: "/download-instagram-reels" },
-  { name: "Instagram Stories", path: "/download-instagram-stories" },
-  { name: "Instagram Video", path: "/instagram-video-downloader" },
-  { name: "YouTube Video", path: "/download-youtube-video" },
-  { name: "Free YouTube", path: "/free-youtube-downloader" },
-  { name: "Facebook Video", path: "/download-facebook-video" },
-  { name: "Facebook Stories", path: "/facebook-story-downloader" },
-  { name: "Facebook Downloader", path: "/facebook-video-downloader" },
-  { name: "Pinterest Video", path: "/download-pinterest-video" },
-  { name: "Pinterest Downloader", path: "/pinterest-video-downloader" },
-  { name: "No Watermark Tool", path: "/download-video-without-watermark" },
-  { name: "Free Online Tool", path: "/free-video-downloader-online" },
-  { name: "Best Downloader 2026", path: "/best-video-downloader-2026" },
-  { name: "MP4 from Link", path: "/download-mp4-from-link" },
-  { name: "AI Image Editor", path: "/image-editor" },
-  { name: "AI Transcriber", path: "/video-to-text" },
+  { name: "Editor IA", path: "/image-editor" },
+  { name: "Transcriptor IA", path: "/video-to-text" },
+  { name: "YouTube", path: "/download-youtube-video" },
+  { name: "TikTok", path: "/download-tiktok-video" },
+  { name: "Instagram", path: "/download-instagram-video" },
+  { name: "Facebook", path: "/download-facebook-video" },
+  { name: "Pinterest", path: "/download-pinterest-video" },
+  { name: "Twitter/X", path: "/download-twitter-video" },
+  { name: "Reddit", path: "/download-reddit-video" },
+  { name: "Twitch", path: "/download-twitch-clip" },
+  { name: "SoundCloud", path: "/download-soundcloud-audio" },
+  { name: "Audio", path: "/audio" },
 ];
 
 export function SEOPage({ platform, title, subtitle, content, faqData }: SEOPageProps) {
@@ -63,15 +56,22 @@ export function SEOPage({ platform, title, subtitle, content, faqData }: SEOPage
 
     try {
       const info = await getVideoInfo(url);
-      
+
+      if (info.error) {
+        setError(info.error);
+        setLoading(false);
+        return;
+      }
+
       if (info && info.title) {
         setVideoInfo(info);
         setLoading(false);
       } else {
-        throw new Error("Video info not found.");
+        setError("No se pudo analizar el enlace. Verifica la URL.");
+        setLoading(false);
       }
     } catch (err: any) {
-      const msg = err.message || `Failed to process ${platform} video.`;
+      const msg = err.message || "No se pudo analizar el enlace. Verifica la URL.";
       setError(msg);
       setLoading(false);
     }
@@ -104,6 +104,7 @@ export function SEOPage({ platform, title, subtitle, content, faqData }: SEOPage
       
       <main className="flex-1">
         {!videoInfo && !loading && <Hero onSearch={handleSearch} isLoading={loading} />}
+        {!videoInfo && !loading && <ResponsibleUseNotice />}
         
         {loading && <LoadingState />}
         
@@ -130,15 +131,20 @@ export function SEOPage({ platform, title, subtitle, content, faqData }: SEOPage
           </>
         )}
 
-        <div className="container mx-auto px-4 py-20 max-w-4xl prose lg:prose-lg">
+        <div className="container mx-auto px-4 py-20 max-w-4xl prose lg:prose-lg prose-headings:text-white prose-p:text-gray-300 prose-li:text-gray-300">
+          <div className="not-prose mb-12 rounded-3xl border border-white/10 bg-white/5 p-8">
+            <p className="text-[10px] font-black uppercase tracking-[0.24em] text-blue-300">{platform}</p>
+            <h1 className="mt-3 text-3xl font-black text-white">{title}</h1>
+            <p className="mt-3 text-sm font-medium leading-relaxed text-gray-400">{subtitle}</p>
+          </div>
           {content}
         </div>
 
         {/* Internal Linking Section */}
         <section className="bg-white/5 py-20 border-t border-white/10 backdrop-blur-sm">
           <div className="container mx-auto px-4 max-w-6xl text-center">
-            <h2 className="text-3xl font-bold text-white mb-4">Explore More Downloaders</h2>
-            <p className="text-gray-400 mb-12 max-w-2xl mx-auto italic">High-quality, free, and secure video downloading tools for all major platforms.</p>
+            <h2 className="text-3xl font-bold text-white mb-4">Explora mas herramientas</h2>
+            <p className="text-gray-400 mb-12 max-w-2xl mx-auto italic">Procesamiento de contenido, gestion multimedia, archivo digital y herramientas IA para creadores.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {ALL_PLATFORMS.filter(p => p.path !== pathname).map((p) => (
                 <Link

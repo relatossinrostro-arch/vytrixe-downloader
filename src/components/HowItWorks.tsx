@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Link2, MousePointer2, Download, CheckCircle2 } from "lucide-react";
+import { Link2, MousePointer2, Archive, CheckCircle2 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 export function HowItWorks() {
@@ -21,7 +21,7 @@ export function HowItWorks() {
       color: "from-purple-500/20 to-transparent"
     },
     {
-      icon: <Download className="w-10 h-10 text-pink-500" />,
+      icon: <Archive className="w-10 h-10 text-pink-500" />,
       title: t("hiw_step3_title"),
       description: t("hiw_step3_desc"),
       color: "from-pink-500/20 to-transparent"

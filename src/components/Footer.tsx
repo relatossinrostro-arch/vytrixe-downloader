@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Globe, Share2, Mail, Play, ShieldCheck, ArrowRight } from "lucide-react";
+import { Globe, Share2, Mail, Play, ShieldCheck } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 import { ProBannerVIP } from "./ProBannerVIP";
@@ -23,7 +23,7 @@ export function Footer() {
                 <Play size={20} fill="currentColor" />
               </div>
               <span className="text-2xl font-black tracking-tight text-white uppercase italic">
-                Vytrixe
+                ViralAuthority PRO PREMIUM
               </span>
             </Link>
             <p className="max-w-xs text-sm leading-relaxed text-gray-500 font-medium">
@@ -41,21 +41,20 @@ export function Footer() {
           <div className="md:col-span-2">
             <h4 className="mb-6 text-[11px] font-black uppercase tracking-[0.2em] text-white">{t("footer_solutions")}</h4>
             <ul className="space-y-4 text-sm text-gray-500 font-bold">
-              <li><Link href="/tiktok-downloader-no-watermark" className="hover:text-blue-500 transition-colors">{t("footer_tiktok_pro")}</Link></li>
-              <li><Link href="/download-youtube-video" className="hover:text-blue-500 transition-colors">{t("footer_yt_converter")}</Link></li>
-              <li><Link href="/download-audio" className="hover:text-blue-500 transition-colors">{t("footer_audio_only")}</Link></li>
-              <li><Link href="/facebook-video-downloader" className="hover:text-blue-500 transition-colors">{t("footer_fb_saver")}</Link></li>
-              <li><Link href="/pinterest-video-downloader" className="hover:text-blue-500 transition-colors">{t("footer_pin_hd")}</Link></li>
+              <li><Link href="/image-editor" className="hover:text-blue-500 transition-colors">Editor IA</Link></li>
+              <li><Link href="/video-to-text" className="hover:text-blue-500 transition-colors">Transcriptor</Link></li>
+              <li><Link href="/download-youtube-video" className="hover:text-blue-500 transition-colors">YouTube</Link></li>
+              <li><Link href="/download-instagram-video" className="hover:text-blue-500 transition-colors">Instagram</Link></li>
+              <li><Link href="/audio" className="hover:text-blue-500 transition-colors">{t("footer_audio_only")}</Link></li>
             </ul>
           </div>
 
           <div className="md:col-span-2">
             <h4 className="mb-6 text-[11px] font-black uppercase tracking-[0.2em] text-white">{t("footer_company")}</h4>
             <ul className="space-y-4 text-sm text-gray-500 font-bold">
-              <li><Link href="#" className="hover:text-blue-500 transition-colors">{t("footer_about")}</Link></li>
-              <li><Link href="#" className="hover:text-blue-500 transition-colors">{t("footer_status_menu")}</Link></li>
-              <li><Link href="#" className="hover:text-blue-500 transition-colors">{t("footer_network")}</Link></li>
-              <li><Link href="#" className="hover:text-blue-500 transition-colors">{t("footer_api")}</Link></li>
+              <li><Link href="/about" className="hover:text-blue-500 transition-colors">{t("footer_about")}</Link></li>
+              <li><Link href="/contact" className="hover:text-blue-500 transition-colors">{t("footer_contact")}</Link></li>
+              <li><Link href="/blog" className="hover:text-blue-500 transition-colors">Blog</Link></li>
             </ul>
           </div>
 
@@ -80,10 +79,13 @@ export function Footer() {
           <p className="text-[10px] font-black text-gray-600 uppercase tracking-[0.2em]">
             © {new Date().getFullYear()} {t("footer_copyright")}
           </p>
-          <div className="mt-6 flex items-center gap-8 sm:mt-0">
-            <Link href="/privacy" className="text-[10px] font-black text-gray-600 hover:text-white transition-colors uppercase tracking-[0.2em]">{t("footer_privacy")}</Link>
-            <Link href="/privacy" className="text-[10px] font-black text-gray-600 hover:text-white transition-colors uppercase tracking-[0.2em]">{t("footer_terms")}</Link>
-            <Link href="/cookies" className="text-[10px] font-black text-gray-600 hover:text-white transition-colors uppercase tracking-[0.2em]">{t("footer_cookbooks")}</Link>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-5 sm:mt-0 sm:justify-end">
+            <Link href="/privacy-policy" className="text-[10px] font-black text-gray-600 hover:text-white transition-colors uppercase tracking-[0.2em]">{t("footer_privacy")}</Link>
+            <Link href="/terms" className="text-[10px] font-black text-gray-600 hover:text-white transition-colors uppercase tracking-[0.2em]">{t("footer_terms")}</Link>
+            <Link href="/cookies" className="text-[10px] font-black text-gray-600 hover:text-white transition-colors uppercase tracking-[0.2em]">{t("footer_cookies")}</Link>
+            <Link href="/about" className="text-[10px] font-black text-gray-600 hover:text-white transition-colors uppercase tracking-[0.2em]">{t("footer_about")}</Link>
+            <Link href="/contact" className="text-[10px] font-black text-gray-600 hover:text-white transition-colors uppercase tracking-[0.2em]">{t("footer_contact")}</Link>
+            <Link href="/blog" className="text-[10px] font-black text-gray-600 hover:text-white transition-colors uppercase tracking-[0.2em]">Blog</Link>
           </div>
         </div>
       </div>

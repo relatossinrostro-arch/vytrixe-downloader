@@ -1,5 +1,5 @@
 /**
- * Vytrixe Analytics Utility
+ * ViralAuthority PRO PREMIUM Analytics Utility
  * Dynamically injects Google Analytics 4 (GA4) scripts only after user consent.
  */
 
@@ -29,5 +29,5 @@ export const initGA = () => {
   `;
   document.head.appendChild(script2);
 
-  console.log("🛡️ Vytrixe: Analytics initialized via user consent.");
+  console.log("🛡️ ViralAuthority PRO PREMIUM: Analytics initialized via user consent.");
 };

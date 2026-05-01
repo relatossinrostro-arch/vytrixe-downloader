@@ -11,7 +11,7 @@ const util = require('util');
 const execPromise = util.promisify(exec);
 
 const app = express();
-const port = 3005;
+const port = 3001;
 
 const DOWNLOADS_DIR = path.join(__dirname, 'downloads');
 if (!fs.existsSync(DOWNLOADS_DIR)) {
@@ -37,15 +37,15 @@ const YT_DLP_BIN = process.env.YT_DLP_PATH || 'yt-dlp';
 const FFMPEG_BIN = process.env.FFMPEG_PATH || 'ffmpeg';
 const COOKIES_PATH = process.env.COOKIES_PATH || path.join(__dirname, 'cookies.txt');
 
-console.log(`🔍 [Vytrixe Engine] Using yt-dlp: ${YT_DLP_BIN}`);
-console.log(`🔍 [Vytrixe Engine] Using FFmpeg: ${FFMPEG_BIN}`);
+console.log(`🔍 [ViralAuthority PRO PREMIUM Engine] Using yt-dlp: ${YT_DLP_BIN}`);
+console.log(`🔍 [ViralAuthority PRO PREMIUM Engine] Using FFmpeg: ${FFMPEG_BIN}`);
 
 let cookiesActive = false;
 if (fs.existsSync(COOKIES_PATH)) {
-  console.log(`🍪 [Vytrixe Engine] Archivo cookies.txt VIP detectado. ¡Descarga de Estados (Stories) habilitada!`);
+  console.log(`🍪 [ViralAuthority PRO PREMIUM Engine] Archivo cookies.txt VIP detectado. ¡Descarga de Estados (Stories) habilitada!`);
   cookiesActive = true;
 } else {
-  console.log(`👀 [Vytrixe Engine] No se detectó cookies.txt. Módulo operando en "Modo Público Normal".`);
+  console.log(`👀 [ViralAuthority PRO PREMIUM Engine] No se detectó cookies.txt. Módulo operando en "Modo Público Normal".`);
 }
 
 // Create a wrapper for yt-dlp that always includes the ffmpeg location
@@ -144,7 +144,7 @@ function prioritizeFormats(formats) {
 
   // 2. Map standard and high qualities
   const foundHeights = [...new Set((formats || []).map(f => f.height).filter(h => h))];
-  console.log(`[Vytrixe Engine] Found available heights: ${foundHeights.join(", ")}`);
+  console.log(`[ViralAuthority PRO PREMIUM Engine] Found available heights: ${foundHeights.join(", ")}`);
 
   qualities.forEach(q => {
     const matches = (formats || []).filter(f => {
@@ -237,7 +237,7 @@ function handleFinalFile(internalFileBase, isAudio, finalUserFileName, res) {
     const targetFile = files.find(f => f.startsWith(internalFileBase) && (f.endsWith('.mp4') || f.endsWith('.mp3')));
 
     if (!targetFile) {
-      console.error("❌ [Vytrixe Engine] Target file not found in:", files.filter(f => f.startsWith(internalFileBase)));
+      console.error("❌ [ViralAuthority PRO PREMIUM Engine] Target file not found in:", files.filter(f => f.startsWith(internalFileBase)));
       return res.status(500).json({ error: "Could not find final converted file." });
     }
 
@@ -247,7 +247,7 @@ function handleFinalFile(internalFileBase, isAudio, finalUserFileName, res) {
     // VALIDATE REAL SIZE (Lowered to allow short videos/audio)
     const minSize = 1024 * 10; // 10KB - Enough to ensure it's not just metadata or empty
     if (stats.size < minSize) {
-      console.error(`❌ [Vytrixe Engine] File too small: ${stats.size} bytes`);
+      console.error(`❌ [ViralAuthority PRO PREMIUM Engine] File too small: ${stats.size} bytes`);
       try { fs.unlinkSync(fullPath); } catch(e) {}
       return res.status(500).json({ 
         error: "El archivo generado parece incompleto o demasiado pequeño.",
@@ -255,7 +255,7 @@ function handleFinalFile(internalFileBase, isAudio, finalUserFileName, res) {
       });
     }
 
-    console.log(`✅ [Vytrixe Engine] File ready: ${targetFile} (${(stats.size / 1024 / 1024).toFixed(2)} MB)`);
+    console.log(`✅ [ViralAuthority PRO PREMIUM Engine] File ready: ${targetFile} (${(stats.size / 1024 / 1024).toFixed(2)} MB)`);
 
     // Cleanup: Remove any .part, .webm, .m4a or temp files from this session
     const tempFiles = files.filter(f => f.startsWith(internalFileBase) && !f.endsWith('.mp4') && !f.endsWith('.mp3'));
@@ -270,7 +270,7 @@ function handleFinalFile(internalFileBase, isAudio, finalUserFileName, res) {
       message: `Archivo listo: ${finalUserFileName}`
     });
   } catch (e) {
-    console.error("❌ [Vytrixe Engine] Error in handleFinalFile:", e);
+    console.error("❌ [ViralAuthority PRO PREMIUM Engine] Error in handleFinalFile:", e);
     res.status(500).json({ error: "Error finalizando la descarga." });
   }
 }
@@ -284,7 +284,7 @@ app.post('/info', async (req, res) => {
   const { url } = req.body;
   if (!url) return res.status(400).json({ error: "URL is required" });
 
-  console.log(`🔍 [Vytrixe Engine] Fetching info for: ${url}`);
+  console.log(`🔍 [ViralAuthority PRO PREMIUM Engine] Fetching info for: ${url}`);
   try {
     const data = await ytDlpWrapper(url, getYtDlpArgs({
       dumpSingleJson: true,
@@ -292,7 +292,7 @@ app.post('/info', async (req, res) => {
       skipDownload: true,
     }));
     
-    console.log(`✅ [Vytrixe Engine] Info fetched for: ${data.title}`);
+    console.log(`✅ [ViralAuthority PRO PREMIUM Engine] Info fetched for: ${data.title}`);
 
     const info = {
       title: data.title,
@@ -346,7 +346,7 @@ app.post('/download', async (req, res) => {
     console.error("Cleanup error:", err);
   }
 
-  console.log(`🚀 [Vytrixe Engine] Starting download: ${url} (Format: ${formatId})`);
+  console.log(`🚀 [ViralAuthority PRO PREMIUM Engine] Starting download: ${url} (Format: ${formatId})`);
 
   try {
     const isAudio = formatId.startsWith('audio_');
@@ -364,7 +364,7 @@ app.post('/download', async (req, res) => {
     const qualityTag = isAudio ? `${bitrate}kbps` : (qualityLabel ? qualityLabel.replace(/\s+/g, '').toLowerCase() : 'best');
     const finalUserFileName = `${safeTitle}-${qualityTag}.${extension}`;
     
-    const internalFileBase = `vytrixe_${timestamp}_${safeTitle}`;
+    const internalFileBase = `viralauthoritypro_${timestamp}_${safeTitle}`;
     const outputTemplate = path.join(DOWNLOADS_DIR, `${internalFileBase}.%(ext)s`);
 
     let command = "";
@@ -398,22 +398,22 @@ app.post('/download', async (req, res) => {
     }
     command += ` --ffmpeg-location "${FFMPEG_BIN}"`;
 
-    console.log(`🛠️ [Vytrixe Engine] Executing: ${command}`);
+    console.log(`🛠️ [ViralAuthority PRO PREMIUM Engine] Executing: ${command}`);
 
     exec(command, { shell: 'cmd.exe' }, (error, stdout, stderr) => {
       if (error) {
-        console.error("❌ [Vytrixe Engine] Exec Error:", error);
-        console.error("❌ [Vytrixe Engine] Stdout:", stdout);
-        console.error("❌ [Vytrixe Engine] Stderr:", stderr);
+        console.error("❌ [ViralAuthority PRO PREMIUM Engine] Exec Error:", error);
+        console.error("❌ [ViralAuthority PRO PREMIUM Engine] Stdout:", stdout);
+        console.error("❌ [ViralAuthority PRO PREMIUM Engine] Stderr:", stderr);
         
         // RE-TRY WITH SIMPLE FORMAT IF IT FAILED (for platforms like Pinterest)
         if (!isAudio && !command.includes('-f best')) {
-          console.log("🔄 [Vytrixe Engine] Retrying with simple format...");
+          console.log("🔄 [ViralAuthority PRO PREMIUM Engine] Retrying with simple format...");
           const simpleCommand = `"${YT_DLP_BIN}" -f best --merge-output-format mp4 -o "${outputTemplate}" "${url}" --ffmpeg-location "${FFMPEG_BIN}"`;
           return exec(simpleCommand, { shell: 'cmd.exe' }, (error2, stdout2, stderr2) => {
             if (error2) {
-               console.error("❌ [Vytrixe Engine] Retry Exec Error:", error2);
-               console.error("❌ [Vytrixe Engine] Retry Stderr:", stderr2);
+               console.error("❌ [ViralAuthority PRO PREMIUM Engine] Retry Exec Error:", error2);
+               console.error("❌ [ViralAuthority PRO PREMIUM Engine] Retry Stderr:", stderr2);
                return res.status(500).json({ error: "Download/Conversion failed after retry." });
             }
             handleFinalFile(internalFileBase, isAudio, finalUserFileName, res);
@@ -523,11 +523,11 @@ app.get('/stream', async (req, res) => {
       else if (fileName.endsWith('.webm')) contentType = 'video/webm';
     }
 
-    const safeFallbackName = (fileName || 'vytrixe_file.bin')
+    const safeFallbackName = (fileName || 'viralauthoritypro_file.bin')
       .replace(/[^\x20-\x7E]/g, '_') 
       .replace(/["\\]/g, '');        
       
-    const encodedName = encodeURIComponent(fileName || 'vytrixe_file.bin');
+    const encodedName = encodeURIComponent(fileName || 'viralauthoritypro_file.bin');
     
     res.setHeader('Content-Type', contentType);
     res.setHeader('Content-Disposition', `attachment; filename="${safeFallbackName}"; filename*=UTF-8''${encodedName}`);
@@ -543,15 +543,15 @@ app.get('/stream', async (req, res) => {
     
     // EMERGENCY FALLBACK: If proxying fails, REDIRECT the user directly to the source.
     // This bypasses server restrictions by using the user's own IP and cookies.
-    console.log("🚀 [Vytrixe Rescue] Proxy failed, redirecting user directly to source...");
+    console.log("🚀 [ViralAuthority PRO PREMIUM Rescue] Proxy failed, redirecting user directly to source...");
     res.redirect(videoUrl);
   }
 });
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', server: 'Vytrixe Advanced Engine', timestamp: new Date() });
+  res.json({ status: 'ok', server: 'ViralAuthority PRO PREMIUM Advanced Engine', timestamp: new Date() });
 });
 
 app.listen(port, '0.0.0.0', () => {
-  console.log(`🚀 Vytrixe Advanced Engine running at http://0.0.0.0:${port}`);
+  console.log(`🚀 ViralAuthority PRO PREMIUM Advanced Engine running at http://0.0.0.0:${port}`);
 });

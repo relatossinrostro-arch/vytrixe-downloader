@@ -1,5 +1,5 @@
 /**
- * Vytrixe Adsterra Configuration (Scripts)
+ * ViralAuthority PRO PREMIUM Adsterra Configuration (Scripts)
  * Centralized registry for ad placement Zone IDs and tokens.
  */
 

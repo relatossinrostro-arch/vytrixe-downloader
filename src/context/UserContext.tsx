@@ -9,7 +9,7 @@ import { LoginModal } from "@/components/LoginModal";
 const ADMIN_EMAILS = [
   "georg@example.com", 
   "georg@gmail.com", 
-  "vytrixe@admin.com", 
+  "viralauthoritypro@admin.com", 
   "georgejoelconcepcionlopez@gmail.com"
 ];
 
@@ -49,7 +49,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
     // Listen for changes on auth state (logged in, signed out, etc.)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      console.log("[Vytrixe Auth] State Change:", _event);
+      console.log("[ViralAuthority PRO PREMIUM Auth] State Change:", _event);
       await handleUserSession(session);
       setIsLoading(false);
     });
@@ -87,7 +87,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     setUser(currentUser);
 
     if (currentUser) {
-      console.log("[Vytrixe Auth] User identified:", currentUser.email);
+      console.log("[ViralAuthority PRO PREMIUM Auth] User identified:", currentUser.email);
       // Check if user is in admin list
       const userEmail = currentUser.email?.toLowerCase();
       const isSuperAdmin = userEmail ? ADMIN_EMAILS.includes(userEmail) : false;
@@ -95,10 +95,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       setIsAdmin(isSuperAdmin);
       
       if (isSuperAdmin) {
-        console.log("[Vytrixe Auth] Welcome Admin:", userEmail);
+        console.log("[ViralAuthority PRO PREMIUM Auth] Welcome Admin:", userEmail);
         setIsPremium(true);
       } else {
-        console.log("[Vytrixe Auth] Checking Pro status for common user...");
+        console.log("[ViralAuthority PRO PREMIUM Auth] Checking Pro status for common user...");
         // Strict Mode: Check premium status immediately
         const { data, error } = await supabase
           .from('profiles')
@@ -107,14 +107,14 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           .single();
         
         if (error) {
-          console.warn("[Vytrixe Auth] Profile check error (Table might not exist):", error);
+          console.warn("[ViralAuthority PRO PREMIUM Auth] Profile check error (Table might not exist):", error);
         }
 
         if (data?.is_premium) {
-          console.log("[Vytrixe Auth] User is PRO!");
+          console.log("[ViralAuthority PRO PREMIUM Auth] User is PRO!");
           setIsPremium(true);
         } else {
-          console.warn("[Vytrixe Auth] User is not Pro yet. Redirect to /premium suggested.");
+          console.warn("[ViralAuthority PRO PREMIUM Auth] User is not Pro yet. Redirect to /premium suggested.");
           setIsPremium(false);
           // We no longer sign out automatically to allow payment flow
         }
@@ -128,13 +128,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     if (currentUser && typeof window !== "undefined") {
       const pendingPro = localStorage.getItem("pending_pro");
       if (pendingPro) {
-        console.log("[Vytrixe Auth] Found pending Pro activation! Applying now...");
+        console.log("[ViralAuthority PRO PREMIUM Auth] Found pending Pro activation! Applying now...");
         try {
           await setPremiumStatusInDB(true);
           localStorage.removeItem("pending_pro");
-          console.log("[Vytrixe Auth] Pro status successfully applied to newly logged in user.");
+          console.log("[ViralAuthority PRO PREMIUM Auth] Pro status successfully applied to newly logged in user.");
         } catch (err) {
-          console.error("[Vytrixe Auth] Failed to apply pending Pro status:", err);
+          console.error("[ViralAuthority PRO PREMIUM Auth] Failed to apply pending Pro status:", err);
         }
       }
     }
@@ -161,7 +161,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const setPremiumStatusInDB = async (status: boolean) => {
     if (!user) return;
     
-    console.log("[Vytrixe Auth] Updating Pro status in DB to:", status);
+    console.log("[ViralAuthority PRO PREMIUM Auth] Updating Pro status in DB to:", status);
     const { error } = await supabase
       .from('profiles')
       .upsert({ 
@@ -170,7 +170,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       });
     
     if (error) {
-      console.error("[Vytrixe Auth] Error updating status:", error);
+      console.error("[ViralAuthority PRO PREMIUM Auth] Error updating status:", error);
       throw error;
     }
     

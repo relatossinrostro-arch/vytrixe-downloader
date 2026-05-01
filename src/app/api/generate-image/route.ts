@@ -2,6 +2,13 @@ import { NextResponse } from "next/server";
 import axios from "axios";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+export const runtime = "nodejs";
+export const maxDuration = 45;
+
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "Unknown image generation error";
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   let prompt = searchParams.get("prompt");
@@ -18,7 +25,7 @@ export async function GET(request: Request) {
       const geminiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
       if (geminiKey) {
         try {
-          console.log("[Vytrixe AI] Enhancing Image Prompt with Gemini Nano Banana Pro...");
+          console.log("[ViralAuthority PRO PREMIUM AI] Enhancing Image Prompt with Gemini Nano Banana Pro...");
           const genAI = new GoogleGenerativeAI(geminiKey);
           const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
           
@@ -41,11 +48,11 @@ export async function GET(request: Request) {
           const result = await model.generateContent(enhancementPrompt);
           const enhanced = result.response.text().trim();
           if (enhanced) {
-            console.log("[Vytrixe AI] Enhanced Prompt:", enhanced);
+            console.log("[ViralAuthority PRO PREMIUM AI] Enhanced Prompt:", enhanced);
             prompt = enhanced;
           }
         } catch (geminiErr) {
-          console.error("[Vytrixe AI] Gemini Prompt Refinement failed:", geminiErr);
+          console.error("[ViralAuthority PRO PREMIUM AI] Gemini Prompt Refinement failed:", geminiErr);
         }
       }
     }
@@ -72,8 +79,8 @@ export async function GET(request: Request) {
         "Cache-Control": "public, max-age=86400",
       },
     });
-  } catch (error: any) {
-    console.error("AI Proxy Generation Error:", error.message || error);
+  } catch (error: unknown) {
+    console.error("AI Proxy Generation Error:", getErrorMessage(error));
     return NextResponse.json({ error: "Failed to generate AI image." }, { status: 500 });
   }
 }

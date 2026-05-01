@@ -86,7 +86,7 @@ export default function Editor({ imageSrc, onClose }: EditorProps) {
       saveToHistory();
       playSuccessSound();
     } catch (err) {
-      setError("Esta función estará disponible en Vytrixe Pro");
+      setError("Esta función estará disponible en ViralAuthority PRO PREMIUM");
     } finally {
       setIsProcessing(false);
     }
@@ -133,7 +133,7 @@ export default function Editor({ imageSrc, onClose }: EditorProps) {
 
       const link = document.createElement('a');
       link.href = dataUrl;
-      link.download = `vytrixe-edited-${Date.now()}.${extension}`;
+      link.download = `viralauthoritypro-edited-${Date.now()}.${extension}`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -142,6 +142,19 @@ export default function Editor({ imageSrc, onClose }: EditorProps) {
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 4000);
       playSuccessSound();
+    }
+  };
+
+  const handleApplyCrop = async () => {
+    if (canvasRef.current) {
+      const success = await (canvasRef.current as any).applyCrop();
+      if (success) {
+        setIsCropping(false);
+        setSuccessMessage("Imagen recortada correctamente 🚀");
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
+        playSuccessSound();
+      }
     }
   };
 
@@ -185,7 +198,7 @@ export default function Editor({ imageSrc, onClose }: EditorProps) {
                <Redo2 size={16} />
              </button>
           </div>
-          <span className="text-[10px] font-black uppercase tracking-widest text-white/20">Vytrixe Studio v2.0</span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-white/20">ViralAuthority PRO PREMIUM Studio v2.0</span>
         </div>
 
         <button onClick={() => { reset(); onClose(); }} className="p-2 hover:bg-red-500/10 text-white/40 hover:text-red-400 rounded-xl transition-all">
@@ -212,7 +225,7 @@ export default function Editor({ imageSrc, onClose }: EditorProps) {
                    )}
                  </AnimatePresence>
 
-                 <CanvasView ref={canvasRef} />
+                 <CanvasView ref={canvasRef} isCropping={isCropping} />
               </div>
 
               <Sidebar 
@@ -222,8 +235,17 @@ export default function Editor({ imageSrc, onClose }: EditorProps) {
                 onAddText={() => canvasRef.current?.addText()}
                 onAddShape={(type) => canvasRef.current?.addShape(type)}
                 onApplyFilter={(f) => canvasRef.current?.applyFilter(f)}
-                onCropMode={() => setIsCropping(true)}
-                onApplyCrop={() => setIsCropping(false)}
+                onRotate={(angle) => canvasRef.current?.rotate(angle)}
+                onFlip={(axis) => canvasRef.current?.flip(axis)}
+                onResize={(w, h) => canvasRef.current?.resize(w, h)}
+                onCropMode={() => {
+                  if (!currentImage) {
+                    setError("Sube una imagen antes de recortar");
+                    return;
+                  }
+                  setIsCropping(true);
+                }}
+                onApplyCrop={handleApplyCrop}
                 onCancelCrop={() => setIsCropping(false)}
                 isProcessing={isProcessing}
                 isCropping={isCropping}

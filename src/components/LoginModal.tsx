@@ -39,7 +39,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
             </div>
             <div className="space-y-1">
               <h2 className="text-2xl font-black uppercase tracking-tight text-white italic">
-                Vytrixe <span className="text-blue-500 not-italic">Pro</span>
+                ViralAuthority PRO PREMIUM <span className="text-blue-500 not-italic">Pro</span>
               </h2>
               <p className="text-sm text-gray-400 font-medium tracking-wide">
                 Join the most advanced multimedia suite.

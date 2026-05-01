@@ -1,4 +1,4 @@
-# Vytrixe Downloader - Premium Video Downloader
+# ViralAuthority PRO PREMIUM Downloader - Premium Video Downloader
 
 A full-featured, production-ready video downloader built with Next.js 15, TypeScript, and TailwindCSS.
 

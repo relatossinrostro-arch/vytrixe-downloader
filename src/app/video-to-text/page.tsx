@@ -8,6 +8,7 @@ import { Footer } from "@/components/Footer";
     Video,
     Copy, 
     Check, 
+    Download,
     Sparkles, 
     Clock, 
     Languages, 
@@ -29,6 +30,14 @@ import { Footer } from "@/components/Footer";
     const [progress, setProgress] = useState(0);
     const [statusMessage, setStatusMessage] = useState("");
     const [transcription, setTranscription] = useState<string | null>(null);
+    const [improvedTranscription, setImprovedTranscription] = useState<string | null>(null);
+    const [segments, setSegments] = useState<any[]>([]);
+    const [activeTab, setActiveTab] = useState<"raw" | "improved" | "segments">("segments");
+    const [videoUrl, setVideoUrl] = useState<string | null>(null);
+    const [localFileUrl, setLocalFileUrl] = useState<string | null>(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [isRefining, setIsRefining] = useState(false);
+    const playerRef = React.useRef<HTMLVideoElement | HTMLIFrameElement | any>(null);
     const [copied, setCopied] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [selectedLang, setSelectedLang] = useState("auto");
@@ -53,36 +62,34 @@ import { Footer } from "@/components/Footer";
     setLoading(true);
     setError(null);
     setTranscription(null);
+    setImprovedTranscription(null);
+    setSegments([]);
     setProgress(5);
-    setStatusMessage(t("trans_status_1"));
+    setStatusMessage("Preparando procesamiento...");
 
     // Progressive loading simulation
     const progressInterval = setInterval(() => {
       setProgress((prev) => {
         if (prev < 30) {
-          setStatusMessage(t("trans_status_2"));
+          setStatusMessage("Procesando medios...");
           return prev + 1;
         }
-        if (prev < 65) {
-          setStatusMessage(t("trans_status_3"));
+        if (prev < 70) {
+          setStatusMessage("Extrayendo capas de audio...");
           return prev + 0.5;
         }
-        if (prev < 90) {
-          setStatusMessage(t("trans_status_4"));
+        if (prev < 95) {
+          setStatusMessage("Whisper AI Transcribiendo...");
           return prev + 0.2;
-        }
-        if (prev < 98) {
-          setStatusMessage(t("trans_status_5"));
-          return prev + 0.1;
         }
         return prev;
       });
-    }, 150);
+    }, 200);
 
     try {
       const formData = new FormData();
       if (activeMode === "url") {
-        formData.append("url", url);
+        formData.append("url", url.trim());
       } else if (file) {
         formData.append("file", file);
       }
@@ -93,30 +100,124 @@ import { Footer } from "@/components/Footer";
       }
 
       const response = await axios.post("/api/transcribe", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
+        headers: { "Content-Type": "multipart/form-data" },
+        timeout: 180_000 // 3 minutes timeout for long videos
       });
+
       clearInterval(progressInterval);
       setProgress(100);
+      
       setTimeout(() => {
-        setTranscription(response.data.text);
+        const rawText = response.data.text || "";
+        setTranscription(rawText);
+        setImprovedTranscription(response.data.improved || rawText);
+        setSegments(response.data.segments || []);
+        setVideoUrl(url);
+        if (file) setLocalFileUrl(URL.createObjectURL(file));
+        setActiveTab("segments");
+        setStatusMessage("Transcripción completada");
         setLoading(false);
       }, 500);
     } catch (err: any) {
       clearInterval(progressInterval);
       console.error("Transcription error:", err);
-      const serverError = err.response?.data?.error;
+      const serverError = err.response?.data?.error || "Error de red";
       const details = err.response?.data?.details;
       
-      setError(details ? `${serverError}: ${details.substring(0, 50)}...` : (serverError || t("trans_limit_error")));
+      setError(details ? `${serverError}: ${details.substring(0, 100)}` : serverError);
+      setStatusMessage("Fallo en el procesamiento");
       setLoading(false);
     }
   };
 
+  const handleRefine = async (mode: 'improve' | 'fix') => {
+    // We always refine from the base transcription to keep it clean
+    const textToRefine = transcription;
+    if (!textToRefine || textToRefine.length < 10) {
+        setStatusMessage("Texto demasiado corto para refinar");
+        return;
+    }
+
+    setIsRefining(true);
+    setStatusMessage("IA trabajando...");
+    
+    try {
+      const response = await axios.post("/api/refine-text", { 
+        text: textToRefine.substring(0, 35000), // Safety limit
+        mode 
+      });
+      
+      setImprovedTranscription(response.data.refinedText);
+      setActiveTab("improved");
+      
+      setStatusMessage(mode === 'fix' ? "Ortografía corregida" : "Texto mejorado con éxito");
+      setTimeout(() => setStatusMessage("Completado"), 3000);
+    } catch (err) {
+      console.error("REFINE_UI_ERROR:", err);
+      setStatusMessage("La IA tuvo un problema, reintentando...");
+      setTimeout(() => setStatusMessage("Listo"), 3000);
+    } finally {
+      setIsRefining(false);
+    }
+  };
+
   const copyToClipboard = () => {
-    if (!transcription) return;
-    navigator.clipboard.writeText(transcription);
+    const textToCopy = activeTab === "improved" ? improvedTranscription : transcription;
+    if (!textToCopy) return;
+    navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const downloadTextFile = () => {
+    const textToDownload = activeTab === "improved" ? improvedTranscription : transcription;
+    if (!textToDownload) return;
+    const element = document.createElement("a");
+    const file = new Blob([textToDownload], { type: 'text/plain' });
+    element.href = URL.createObjectURL(file);
+    element.download = `ViralAuthority PRO PREMIUM-Transcription-${activeTab}-${Date.now()}.txt`;
+    document.body.appendChild(element); // Required for this to work in FireFox
+    element.click();
+    document.body.removeChild(element);
+  };
+
+  const getYouTubeId = (url: string) => {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const seekTo = (seconds: number) => {
+    if (activeMode === "url" && videoUrl) {
+      const iframe = document.getElementById('youtube-player') as HTMLIFrameElement;
+      if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage(JSON.stringify({
+          event: 'command',
+          func: 'seekTo',
+          args: [seconds, true]
+        }), '*');
+      }
+    } else if (playerRef.current) {
+      playerRef.current.currentTime = seconds;
+      playerRef.current.play();
+    }
+  };
+
+
+  const updateSegmentText = (index: number, newText: string) => {
+    const newSegments = [...segments];
+    newSegments[index].text = newText;
+    setSegments(newSegments);
+    
+    // Also update raw transcription
+    const fullText = newSegments.map(s => s.text).join(" ");
+    setTranscription(fullText);
   };
 
   return (
@@ -263,33 +364,135 @@ import { Footer } from "@/components/Footer";
 
           {/* Results Area */}
           {transcription && (
-            <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-5 duration-700">
-              <div className="bg-white/5 border border-white/10 rounded-[2.5rem] overflow-hidden">
-                <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400">
-                      <FileText size={20} />
+            <div className="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-5 duration-700">
+              <div className="flex flex-col lg:flex-row gap-8">
+                
+                {/* Left Side: Video Player */}
+                <div className="lg:w-1/3 lg:sticky lg:top-24 h-fit space-y-6">
+                  <div className="aspect-video bg-black rounded-3xl border border-white/10 overflow-hidden shadow-2xl relative group">
+                    {activeMode === "url" && videoUrl ? (
+                      <iframe 
+                        id="youtube-player"
+                        src={`https://www.youtube.com/embed/${getYouTubeId(videoUrl)}?enablejsapi=1`}
+                        className="w-full h-full"
+                        allowFullScreen
+                      />
+                    ) : localFileUrl ? (
+                      <video 
+                        ref={playerRef}
+                        src={localFileUrl} 
+                        controls 
+                        className="w-full h-full" 
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-white/5">
+                        <Video size={48} className="text-white/10" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40">Herramientas IA</h4>
+                      <Sparkles size={14} className="text-purple-500" />
                     </div>
-                    <div>
-                      <h3 className="font-bold text-sm uppercase tracking-widest">{t("trans_result")}</h3>
-                      <p className="text-xs text-gray-500 font-medium">{t("trans_ready")}</p>
+                    <div className="grid grid-cols-1 gap-2">
+                      <button 
+                        onClick={() => handleRefine('improve')}
+                        disabled={isRefining}
+                        className="flex items-center justify-center gap-2 py-3 bg-purple-600/20 border border-purple-500/30 hover:bg-purple-600/30 rounded-xl transition-all font-bold text-[10px] uppercase tracking-tighter disabled:opacity-50"
+                      >
+                        {isRefining ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                        Mejorar con IA
+                      </button>
+                      <button 
+                        onClick={() => handleRefine('fix')}
+                        disabled={isRefining}
+                        className="flex items-center justify-center gap-2 py-3 bg-white/5 hover:bg-white/10 rounded-xl transition-all font-bold text-[10px] uppercase tracking-tighter disabled:opacity-50"
+                      >
+                        <ShieldCheck size={14} className="text-blue-400" />
+                        Corregir Ortografía
+                      </button>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-2">
+                      <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40">Edición</h4>
+                      <Activity size={14} className="text-green-500" />
+                    </div>
+                    <button 
+                      onClick={() => setIsEditing(!isEditing)}
+                      className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-bold text-[10px] uppercase tracking-tighter border ${isEditing ? 'bg-green-600 border-green-500 text-white' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
+                    >
+                      {isEditing ? <Check size={14} /> : <FileText size={14} />}
+                      {isEditing ? "Guardar Cambios" : "Editar Manualmente"}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Right Side: Transcription */}
+                <div className="lg:w-2/3 bg-white/5 border border-white/10 rounded-[2.5rem] overflow-hidden flex flex-col h-[700px]">
+                  <div className="px-8 py-6 border-b border-white/5 bg-white/[0.02]">
+                    <div className="flex bg-black/40 p-1.5 rounded-2xl border border-white/10 relative">
+                      {[
+                        { id: 'segments', label: 'Timeline' },
+                        { id: 'improved', label: 'Mejorado' },
+                        { id: 'raw', label: 'Original' }
+                      ].map(tab => (
+                        <button 
+                          key={tab.id}
+                          onClick={() => setActiveTab(tab.id as any)}
+                          className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 relative ${activeTab === tab.id ? "bg-purple-600 text-white shadow-[0_0_20px_rgba(147,51,234,0.3)]" : "text-gray-500 hover:text-gray-300"}`}
+                        >
+                          {tab.label}
+                        </button>
+                      ))}
                     </div>
                   </div>
-                  <button 
-                    onClick={copyToClipboard}
-                    className="flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 rounded-2xl transition-colors font-bold text-xs uppercase tracking-widest"
-                  >
-                    {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
-                    {copied ? t("trans_copied") : t("trans_copy")}
-                  </button>
+
+                  <div className="flex-1 overflow-y-auto custom-scrollbar p-6 lg:p-10 pt-4">
+                    {activeTab === 'segments' ? (
+                      <div className="space-y-6">
+                        {segments.length > 0 ? segments.map((seg, i) => (
+                          <div 
+                            key={i} 
+                            onClick={() => !isEditing && seekTo(seg.start)}
+                            className={`flex gap-6 group rounded-2xl transition-all ${isEditing ? 'bg-white/[0.02] p-4 border border-white/5' : 'cursor-pointer hover:bg-white/5 p-4'}`}
+                          >
+                            <div className="pt-1">
+                              <span className="px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-lg text-[10px] font-black text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-all">
+                                {formatTime(seg.start)}
+                              </span>
+                            </div>
+                            {isEditing ? (
+                              <textarea
+                                value={seg.text}
+                                onChange={(e) => updateSegmentText(i, e.target.value)}
+                                className="flex-1 bg-transparent border-none outline-none text-gray-300 text-lg leading-relaxed focus:text-white resize-none h-auto"
+                                rows={2}
+                              />
+                            ) : (
+                              <p className="flex-1 text-gray-300 text-lg leading-relaxed group-hover:text-white transition-colors">
+                                {seg.text}
+                              </p>
+                            )}
+                          </div>
+                        )) : (
+                          <div className="text-center py-20 opacity-20">
+                            <FileText size={48} className="mx-auto mb-4" />
+                            <p className="uppercase font-black text-xs">No hay segmentos disponibles</p>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <textarea 
+                        value={activeTab === "improved" ? (improvedTranscription || "") : (transcription || "")}
+                        readOnly
+                        className="w-full h-full bg-transparent border-none outline-none text-gray-100 text-lg leading-relaxed font-normal resize-none focus:ring-0 custom-scrollbar"
+                      />
+                    )}
+                  </div>
                 </div>
-                <div className="p-8 lg:p-12">
-                  <textarea 
-                    value={transcription}
-                    readOnly
-                    className="w-full h-[400px] bg-transparent border-none outline-none text-gray-100 text-lg leading-relaxed font-normal resize-none focus:ring-0"
-                  />
-                </div>
+
               </div>
             </div>
           )}

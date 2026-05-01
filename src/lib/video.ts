@@ -1,6 +1,15 @@
 import axios from "axios";
+import { detectSupportedPlatform, UNSUPPORTED_LINK_ERROR } from "@/lib/platforms";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const getApiUrl = () => {
+  if (typeof window !== "undefined") {
+    return process.env.NEXT_PUBLIC_API_URL || window.location.origin;
+  }
+  return process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+};
+
+const VIDEO_INFO_ENDPOINT = "/api/video/info";
+const VIDEO_INFO_ERROR = UNSUPPORTED_LINK_ERROR;
 
 export interface VideoFormat {
   url: string;
@@ -18,58 +27,138 @@ export interface VideoInfo {
   duration?: number;
   platform?: string;
   formats?: VideoFormat[];
+  error?: string;
 }
 
 export async function getVideoInfo(videoUrl: string): Promise<VideoInfo> {
-  console.log("🔍 [Vytrixe Frontend] Fetching info from:", API_URL);
   try {
-    const response = await axios.post(`${API_URL}/info`, { url: videoUrl });
+    const detection = detectSupportedPlatform(videoUrl);
+    console.info("[ViralAuthority Video Helper] URL received", {
+      url: videoUrl,
+      platform: detection.platform,
+      reason: detection.reason,
+    });
+
+    if (!detection.platform) {
+      return {
+        title: "",
+        thumbnail: "",
+        url: videoUrl,
+        platform: "",
+        formats: [],
+        error: UNSUPPORTED_LINK_ERROR,
+      };
+    }
+
+    const apiUrl = getApiUrl();
+    const endpoint = apiUrl.endsWith("/") 
+      ? `${apiUrl}${VIDEO_INFO_ENDPOINT.substring(1)}` 
+      : `${apiUrl}${VIDEO_INFO_ENDPOINT}`;
+
+    console.log(`[ViralAuthority] Fetching from: ${endpoint}`);
+
+    const response = await axios.post(
+      endpoint,
+      { url: videoUrl },
+      { 
+        timeout: 30_000,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      }
+    );
     return response.data;
-  } catch (error: any) {
-    console.error("Error fetching video info:", error);
-    throw new Error(error.response?.data?.error || "Failed to get video info");
+  } catch (error: unknown) {
+    console.warn("Video info request failed:", error);
+    
+    let errorMessage = VIDEO_INFO_ERROR;
+    if (axios.isAxiosError(error)) {
+      if (error.code === 'ECONNABORTED') errorMessage = "El servidor tardó demasiado en responder.";
+      else if (!error.response) errorMessage = "Error de red. Verifica tu conexión o el estado del servidor.";
+      else errorMessage = (error.response?.data as { error?: string } | undefined)?.error || errorMessage;
+    }
+
+    return {
+      title: "",
+      thumbnail: "",
+      url: videoUrl,
+      platform: "",
+      formats: [],
+      error: errorMessage,
+    };
   }
 }
 
 export async function downloadVideo(
-  videoUrl: string, 
-  format?: string, 
-  quality?: string
-): Promise<{ downloadUrl: string; filename: string }> {
+  videoUrl: string,
+  formatId?: string,
+  ext?: string,
+  qualityLabel?: string,
+  platform?: string,
+  title?: string
+): Promise<void> {
   try {
-    // Validate URL before sending
     if (!videoUrl || !videoUrl.startsWith("http")) {
-      throw new Error("Pega un enlace válido");
+      throw new Error("Pega un enlace valido");
     }
 
-    const payload = { 
-      url: videoUrl, 
-      formatId: format || "best",
-      qualityLabel: quality || "best"
+    let type = "video";
+    if (ext === "mp3" || ext === "m4a") type = "audio";
+    if (ext === "jpg" || ext === "png" || ext === "webp") type = "image";
+
+    const payload = {
+      url: videoUrl,
+      platform: platform || "",
+      formatId: formatId || "",
+      ext: ext || "",
+      type,
+      quality: qualityLabel || "best",
+      title: title || "",
     };
 
-    // Call the advanced backend directly
-    const response = await axios.post(`${API_URL}/download`, payload);
-    return {
-      downloadUrl: `${API_URL}${response.data.url}`,
-      filename: response.data.fileName
-    };
-  } catch (error: any) {
-    const errorMsg = error.response?.data?.error || error.message || "Error descargando";
-    console.error("AXIOS FULL ERROR:", JSON.stringify(error.response?.data, null, 2) || error.message);
-    
-    const customError = new Error(errorMsg) as any;
-    customError.details = error.response?.data?.details || "";
-    throw customError;
+    const response = await fetch("/api/download", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error || "Error descargando");
+    }
+
+    const blob = await response.blob();
+    let filename = "viralauthoritypro-download.mp4";
+    const disposition = response.headers.get("Content-Disposition");
+
+    if (disposition) {
+      const utf8Match = disposition.match(/filename\*=UTF-8''([^;]+)/i);
+      const asciiMatch = disposition.match(/filename="?([^";]+)"?/i);
+      if (utf8Match?.[1]) filename = decodeURIComponent(utf8Match[1]);
+      else if (asciiMatch?.[1]) filename = asciiMatch[1];
+    }
+
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename.includes(".") ? filename : `${filename}.mp4`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error: unknown) {
+    console.error("DOWNLOAD HELPER ERROR:", error);
+    throw error;
   }
 }
 
-// Keeping getVideoMeta for backward compatibility if needed
 export async function getVideoMeta(videoUrl: string): Promise<VideoInfo> {
   return getVideoInfo(videoUrl);
 }
 
-// Cleanup is now handled by the VPS
 export async function cleanupTempFiles() {
-  // No-op on the frontend
+  // No-op on the frontend.
 }

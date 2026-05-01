@@ -1,10 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Link2, ArrowRight, Shield, Zap, Star, Globe, Clock, Download } from "lucide-react";
-import { AdsterraAds } from "./AdsterraAds";
-import { ADS_SCRIPTS } from "@/lib/adsConfig";
+import { Archive, Globe, Link2, Shield, Zap } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { ProBannerVIP } from "./ProBannerVIP";
 
@@ -33,7 +31,6 @@ export function Hero({ onSearch, isLoading, externalUrl }: HeroProps) {
 
   return (
     <section className="relative overflow-hidden pt-16 pb-32 lg:pt-24 lg:pb-48">
-      {/* Dynamic Background Elements */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none z-0">
         <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-blue-600/10 blur-[120px] animate-pulse" />
         <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] rounded-full bg-purple-600/10 blur-[120px]" />
@@ -42,25 +39,32 @@ export function Hero({ onSearch, isLoading, externalUrl }: HeroProps) {
 
       <div className="container relative mx-auto px-4 z-10">
         <div className="flex flex-col items-center text-center">
-          
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="max-w-4xl mx-auto"
+            className="max-w-5xl mx-auto"
           >
             <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-6 py-2 text-xs font-black text-blue-400 uppercase tracking-widest shadow-2xl backdrop-blur-md">
               <span className="flex h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
-              Vytrixe Premium v1.0
+              ViralAuthority PRO PREMIUM v1.0
             </div>
-            
-            <h1 className="text-6xl font-black tracking-tighter text-white sm:text-8xl lg:text-9xl leading-[0.95] mb-8">
-              {t("hero_title_1")} <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-gradient-x">{t("hero_title_2")}</span>
+
+            <h1 className="text-5xl font-black tracking-tighter text-white sm:text-7xl lg:text-8xl leading-tight mb-8">
+              {t("hero_title_1")}{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-gradient-x">
+                {t("hero_title_2")}
+              </span>
             </h1>
-            
-            <p className="mt-8 max-w-2xl mx-auto text-lg font-medium text-gray-400 sm:text-2xl leading-relaxed tracking-tight" dangerouslySetInnerHTML={{ __html: t("hero_subtitle").replace("multimedia suite", "<span class='text-white font-bold'>multimedia suite</span>").replace("suite multimedia", "<span class='text-white font-bold'>suite multimedia</span>") }}>
-            </p>
+
+            <p
+              className="mt-8 max-w-2xl mx-auto text-lg font-medium text-gray-400 sm:text-xl leading-relaxed tracking-tight"
+              dangerouslySetInnerHTML={{
+                __html: t("hero_subtitle")
+                  .replace("multimedia suite", "<span class='text-white font-bold'>multimedia suite</span>")
+                  .replace("suite multimedia", "<span class='text-white font-bold'>suite multimedia</span>"),
+              }}
+            />
           </motion.div>
 
           <motion.form
@@ -98,7 +102,7 @@ export function Hero({ onSearch, isLoading, externalUrl }: HeroProps) {
                 ) : (
                   <>
                     <span>{t("hero_button_download")}</span>
-                    <Download size={24} />
+                    <Archive size={24} />
                   </>
                 )}
               </button>
@@ -113,8 +117,7 @@ export function Hero({ onSearch, isLoading, externalUrl }: HeroProps) {
 
           <ProBannerVIP />
 
-          {/* Social Proof / Stats */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
@@ -124,9 +127,9 @@ export function Hero({ onSearch, isLoading, externalUrl }: HeroProps) {
               { label: t("stat_downloads"), value: "2.4M+", color: "text-blue-500" },
               { label: t("stat_retention"), value: "99.9%", color: "text-purple-500" },
               { label: t("stat_platforms"), value: "40+", color: "text-pink-500" },
-              { label: t("stat_speed"), value: "0.8s", color: "text-green-500" }
-            ].map((stat, i) => (
-              <div key={i} className="flex flex-col gap-1">
+              { label: t("stat_speed"), value: "0.8s", color: "text-green-500" },
+            ].map((stat) => (
+              <div key={stat.label} className="flex flex-col gap-1">
                 <span className={`text-4xl font-black tracking-tighter ${stat.color}`}>{stat.value}</span>
                 <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{stat.label}</span>
               </div>

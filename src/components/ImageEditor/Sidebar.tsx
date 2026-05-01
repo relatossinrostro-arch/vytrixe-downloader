@@ -21,6 +21,9 @@ interface SidebarProps {
   onAddText: () => void;
   onAddShape: (type: string) => void;
   onApplyFilter: (filter: string) => void;
+  onRotate: (angle: number) => void;
+  onFlip: (axis: 'x' | 'y') => void;
+  onResize: (width: number, height: number) => void;
   onCropMode: () => void;
   onApplyCrop: () => void;
   onCancelCrop: () => void;
@@ -30,16 +33,19 @@ interface SidebarProps {
 
 export function Sidebar({ 
   onRemoveBG, onUpscale, onExport, onAddText, onAddShape, 
-  onApplyFilter, onCropMode, onApplyCrop, onCancelCrop,
+  onApplyFilter, onRotate, onFlip, onResize, onCropMode, onApplyCrop, onCancelCrop,
   isProcessing, isCropping 
 }: SidebarProps) {
   const { 
     activeTab, setActiveTab, reset, setFilter, 
     brightness, contrast, saturate, sepia, hue, blur, temperature, vignette, exposure,
-    isDrawingMode, setDrawingMode, brushColor, brushWidth, setBrushSettings
+    isDrawingMode, setDrawingMode, brushColor, brushWidth, setBrushSettings,
+    cropRatio, setCropRatio
   } = useEditorStore();
   const { isPremium } = useUser();
   const [exportFormat, setExportFormat] = React.useState('png');
+  const [resizeWidth, setResizeWidth] = React.useState('');
+  const [resizeHeight, setResizeHeight] = React.useState('');
 
   const tabs = [
     { id: 'transform', icon: Maximize, label: 'Transform' },
@@ -91,19 +97,19 @@ export function Sidebar({
           {activeTab === 'transform' && (
             <motion.div key="transform" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="space-y-6">
               <div className="grid grid-cols-2 gap-2">
-                <button className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all">
+                <button onClick={() => onRotate(90)} className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all">
                   <RotateCw size={20} className="text-blue-400" />
                   <span className="text-[9px] font-black uppercase">Rotate</span>
                 </button>
-                <button className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all">
+                <button onClick={() => onFlip('x')} className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all">
                   <FlipHorizontal size={20} className="text-purple-400" />
                   <span className="text-[9px] font-black uppercase">Flip X</span>
                 </button>
-                <button className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all">
+                <button onClick={() => onFlip('y')} className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all">
                   <FlipVertical size={20} className="text-purple-400" />
                   <span className="text-[9px] font-black uppercase">Flip Y</span>
                 </button>
-                <button className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all">
+                <button className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all opacity-50 cursor-not-allowed">
                   <ZoomIn size={20} className="text-green-400" />
                   <span className="text-[9px] font-black uppercase">Zoom</span>
                 </button>
@@ -114,17 +120,39 @@ export function Sidebar({
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <span className="text-[8px] text-white/40 uppercase">Ancho</span>
-                    <input type="number" placeholder="1920" className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-blue-500" />
+                    <input 
+                      type="number" value={resizeWidth} onChange={(e) => setResizeWidth(e.target.value)}
+                      placeholder="1920" className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-blue-500" 
+                    />
                   </div>
                   <div className="space-y-1">
                     <span className="text-[8px] text-white/40 uppercase">Alto</span>
-                    <input type="number" placeholder="1080" className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-blue-500" />
+                    <input 
+                      type="number" value={resizeHeight} onChange={(e) => setResizeHeight(e.target.value)}
+                      placeholder="1080" className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-blue-500" 
+                    />
                   </div>
                 </div>
+                <button 
+                  onClick={() => onResize(parseInt(resizeWidth), parseInt(resizeHeight))}
+                  disabled={!resizeWidth || !resizeHeight}
+                  className="w-full py-2 bg-blue-600 rounded-lg text-[9px] font-black uppercase tracking-widest disabled:opacity-30"
+                >
+                  Cambiar Tamaño
+                </button>
                 <div className="grid grid-cols-2 gap-2">
-                  {['1080x1080', '1920x1080', '1280x720', '1080x1920'].map(res => (
-                    <button key={res} className="py-2 bg-white/5 border border-white/5 rounded-lg text-[8px] font-bold hover:bg-blue-500/10 transition-all">
-                      {res}
+                  {[
+                    { label: 'Square', w: 1080, h: 1080 },
+                    { label: 'HD', w: 1920, h: 1080 },
+                    { label: 'SD', w: 1280, h: 720 },
+                    { label: 'Story', w: 1080, h: 1920 }
+                  ].map(res => (
+                    <button 
+                      key={res.label} 
+                      onClick={() => { setResizeWidth(res.w.toString()); setResizeHeight(res.h.toString()); onResize(res.w, res.h); }}
+                      className="py-2 bg-white/5 border border-white/5 rounded-lg text-[8px] font-bold hover:bg-blue-500/10 transition-all"
+                    >
+                      {res.label} ({res.w}x{res.h})
                     </button>
                   ))}
                 </div>
@@ -150,7 +178,11 @@ export function Sidebar({
               )}
               <div className="grid grid-cols-2 gap-2 pt-4">
                 {['1:1', '16:9', '9:16', '4:5', 'Free'].map(ratio => (
-                  <button key={ratio} className="py-3 bg-white/5 border border-white/5 rounded-xl text-[9px] font-black uppercase hover:bg-white/10">
+                  <button 
+                    key={ratio} 
+                    onClick={() => setCropRatio(ratio)}
+                    className={`py-3 rounded-xl text-[9px] font-black uppercase transition-all ${cropRatio === ratio ? 'bg-blue-600 text-white shadow-lg border-blue-500' : 'bg-white/5 border border-white/5 text-white/40 hover:bg-white/10'}`}
+                  >
                     {ratio}
                   </button>
                 ))}

@@ -9,22 +9,22 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.vytrixe.com"),
-  title: "Vytrixe - All-in-One: Video Downloader, AI Editor & Transcriber",
-  description: "Free online platform to download HD videos, privately save Facebook/Instagram Stories, transcribe audio using AI, and generate covers with our advanced Image Editor. Fast, secure, and no watermark.",
-  keywords: ["video downloader", "image editor online", "video to text", "ai transcription", "tiktok downloader", "youtube downloader", "instagram story saver", "free photo editor", "Vytrixe"],
-  authors: [{ name: "Vytrixe Team" }],
+  metadataBase: new URL("https://www.viralauthoritypro.com"),
+  title: "ViralAuthority PRO PREMIUM - Multimedia, AI, Transcription and Digital Archive Tools",
+  description: "Professional platform for multimedia management, AI transcription, image editing, audio workflows and responsible digital archive for personal or educational reference.",
+  keywords: ["multimedia management", "digital archive", "ai transcription", "image editor online", "video to text", "creator tools", "offline reference", "ViralAuthority PRO PREMIUM"],
+  authors: [{ name: "ViralAuthority PRO PREMIUM Team" }],
   openGraph: {
-    title: "Vytrixe - AI Multimedia Suite",
-    description: "Download videos, edit images, and transcribe audio with AI. All-in-one free platform.",
-    url: "https://www.vytrixe.com",
-    siteName: "Vytrixe",
+    title: "ViralAuthority PRO PREMIUM - AI Multimedia Suite",
+    description: "Manage multimedia references, edit images, and transcribe audio with AI in a responsible creator workflow.",
+    url: "https://www.viralauthoritypro.com",
+    siteName: "ViralAuthority PRO PREMIUM",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Vytrixe Platform Preview",
+        alt: "ViralAuthority PRO PREMIUM Platform Preview",
       },
     ],
     locale: "en_US",
@@ -32,15 +32,15 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Vytrixe - AI Multimedia Suite",
-    description: "Download, Edit, and Transcribe with AI. Fast, secure, and 100% free.",
+    title: "ViralAuthority PRO PREMIUM - AI Multimedia Suite",
+    description: "Multimedia management, AI editing and transcription for responsible creator workflows.",
     images: ["/og-image.png"],
   },
   alternates: {
-    canonical: "https://www.vytrixe.com",
+    canonical: "https://www.viralauthoritypro.com",
     languages: {
-      "en-US": "https://www.vytrixe.com",
-      "es-ES": "https://www.vytrixe.com",
+      "en-US": "https://www.viralauthoritypro.com",
+      "es-ES": "https://www.viralauthoritypro.com",
     },
   },
   robots: {

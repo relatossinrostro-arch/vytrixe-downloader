@@ -25,6 +25,7 @@ interface EditorState {
   temperature: number;
   vignette: number;
   exposure: number;
+  cropRatio: string;
 
   // Methods
   setImage: (src: string) => void;
@@ -33,6 +34,7 @@ interface EditorState {
   setDrawingMode: (active: boolean) => void;
   setBrushSettings: (color: string, width: number) => void;
   setFilter: (key: string, value: number) => void;
+  setCropRatio: (ratio: string) => void;
   reset: () => void;
   saveToHistory: (snapshot?: Partial<EditorState>) => void;
   undo: () => void;
@@ -61,6 +63,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   temperature: 0,
   vignette: 0,
   exposure: 100,
+  cropRatio: 'Free',
 
   setImage: (src) => set({ imageSrc: src, videoSrc: null, fileType: 'image' }),
   setVideo: (src) => set({ videoSrc: src, imageSrc: null, fileType: 'video' }),
@@ -69,6 +72,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   setBrushSettings: (color, width) => set({ brushColor: color, brushWidth: width }),
   
   setFilter: (key, value) => set((state) => ({ ...state, [key]: value })),
+  setCropRatio: (ratio) => set({ cropRatio: ratio }),
 
   reset: () => set({
     brightness: 100,

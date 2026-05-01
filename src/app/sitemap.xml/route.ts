@@ -1,7 +1,11 @@
 export const dynamic = "force-static";
 import { NextResponse } from "next/server";
 
-const BASE_URL = "https://www.vytrixe.com";
+import { getAllBlogPosts } from "@/lib/blogData";
+
+const BASE_URL = "https://www.viralauthoritypro.com";
+
+const blogPosts = getAllBlogPosts();
 
 const routes = [
   "",
@@ -27,8 +31,13 @@ const routes = [
   "/download-instagram-stories",
   "/facebook-story-downloader",
   "/download-audio",
-  "/privacy",
+  "/blog",
+  "/about",
+  "/contact",
+  "/cookies",
+  "/privacy-policy",
   "/terms",
+  ...blogPosts.map(post => `/blog/${post.id}`)
 ];
 
 export async function GET() {

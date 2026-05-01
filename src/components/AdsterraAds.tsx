@@ -15,7 +15,7 @@ export function AdsterraAds({ zoneId, format, className = "", minHeight = "0px" 
 
   useEffect(() => {
     // 1. Consent Validation
-    const consent = typeof window !== "undefined" ? localStorage.getItem("vytrixe-cookie-consent") : null;
+    const consent = typeof window !== "undefined" ? localStorage.getItem("viralauthoritypro-cookie-consent") : null;
     if (consent !== "true") return;
     if (!containerRef.current || !zoneId) return;
 
@@ -45,7 +45,7 @@ export function AdsterraAds({ zoneId, format, className = "", minHeight = "0px" 
       containerRef.current.appendChild(atOptions);
       containerRef.current.appendChild(invoke);
       
-      console.log(`💰 Vytrixe: Adsterra Banner [${zoneId}] injected.`);
+      console.log(`💰 ViralAuthority PRO PREMIUM: Adsterra Banner [${zoneId}] injected.`);
     } catch (err) {
       console.error("Adsterra Banner Error:", err);
     }

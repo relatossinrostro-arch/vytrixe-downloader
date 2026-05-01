@@ -5,7 +5,7 @@ export async function GET() {
   const robots = `User-agent: *
 Allow: /
 
-Sitemap: https://www.vytrixe.com/sitemap.xml
+Sitemap: https://www.viralauthoritypro.com/sitemap.xml
 `;
 
   return new NextResponse(robots, {

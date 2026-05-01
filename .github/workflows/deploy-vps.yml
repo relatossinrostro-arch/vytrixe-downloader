@@ -1,0 +1,55 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies & Build
+        run: |
+          npm install
+          npm run build
+
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_IP }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            mkdir -p /var/www/viralauthoritypro
+            cd /var/www/viralauthoritypro
+            git pull origin main || git clone git@github.com:relatossinrostro-arch/vytrixe-downloader.git .
+            
+            # Setup environment
+            chmod +x scripts/setup_vps.sh
+            ./scripts/setup_vps.sh
+            
+            # Install & Restart Backend
+            cd backend && npm install
+            pm2 delete vpro-api || true
+            pm2 start index.js --name "vpro-api"
+            
+            # Install & Restart Frontend
+            cd ..
+            npm install
+            npm run build
+            pm2 delete vpro-app || true
+            pm2 start npm --name "vpro-app" -- start
+            
+            # Ensure Nginx is updated
+            sudo cp infra/nginx.conf /etc/nginx/sites-available/viralauthoritypro
+            sudo ln -sf /etc/nginx/sites-available/viralauthoritypro /etc/nginx/sites-enabled/
+            sudo nginx -t && sudo systemctl restart nginx

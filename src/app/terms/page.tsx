@@ -1,50 +1,82 @@
+"use client";
+
+import React from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { FileText, Shield, UserCheck, AlertCircle } from "lucide-react";
 
-export const metadata = {
-  title: "Terms of Service - Vytrixe",
-  description: "Terms and conditions for using the Vytrixe video downloader service.",
-};
-
-export default function Terms() {
+export default function TermsPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="min-h-screen bg-[#050505] text-white overflow-hidden relative">
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none" />
+
       <Navbar />
-      <main className="flex-1 py-20">
-        <div className="container mx-auto px-4 max-w-4xl prose prose-blue lg:prose-lg">
-          <h1 className="text-4xl font-extrabold text-gray-900 border-b pb-4">Terms of Service</h1>
-          <p className="mt-8 text-gray-600">
-            Welcome to Vytrixe Downloader. By using our website, you agree to comply with and be bound by the following terms and conditions. Please review them carefully.
-          </p>
+
+      <main className="container mx-auto px-4 py-20 relative z-10">
+        <div className="max-w-4xl mx-auto space-y-12">
           
-          <h2 className="text-2xl font-bold text-gray-900 mt-12">1. Acceptance of Agreement</h2>
-          <p className="text-gray-600">
-            By accessing and using Vytrixe, you accept and agree to be bound by the terms of this agreement. If you do not agree to these terms, you should not use this site.
-          </p>
+          <div className="text-center space-y-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-widest">
+              <FileText size={14} /> Legal Agreement
+            </div>
+            <h1 className="text-4xl md:text-7xl font-black uppercase tracking-tight italic leading-tight">
+              Terms of <span className="text-blue-500 not-italic">Service</span>
+            </h1>
+            <p className="text-gray-500 font-medium tracking-widest uppercase text-xs">Last updated: April 29, 2026</p>
+          </div>
 
-          <h2 className="text-2xl font-bold text-gray-900 mt-12">2. No Content Hosting</h2>
-          <p className="text-gray-600">
-            Vytrixe does not host any of the video or audio files downloaded through our service. We only provide a technical service that allows users to access and download content from third-party platforms.
-          </p>
+          <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-[3rem] p-8 md:p-16 space-y-12 leading-relaxed text-gray-400">
+            
+            <section className="space-y-6">
+              <div className="flex items-center gap-4 text-white">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
+                  <Shield size={24} />
+                </div>
+                <h2 className="text-2xl font-black uppercase tracking-tighter italic">1. Use of Service</h2>
+              </div>
+              <p className="text-sm md:text-base">
+                By accessing ViralAuthority PRO PREMIUM, you agree to use our tools for **personal, non-commercial purposes only**. You are responsible for ensuring that your use of the service complies with all applicable laws and regulations.
+              </p>
+            </section>
 
-          <h2 className="text-2xl font-bold text-gray-900 mt-12">3. User Responsibility</h2>
-          <p className="text-gray-600">
-            Users are solely responsible for the content they download. You agree to use the service only for lawful purposes and in accordance with the terms of service of the video's original platform (e.g., YouTube, TikTok, Instagram).
-          </p>
+            <section className="space-y-6">
+              <div className="flex items-center gap-4 text-white">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-600 to-purple-400 flex items-center justify-center text-white shadow-lg shadow-purple-500/20">
+                  <AlertCircle size={24} />
+                </div>
+                <h2 className="text-2xl font-black uppercase tracking-tighter italic">2. No Content Storage</h2>
+              </div>
+              <p className="text-sm md:text-base">
+                ViralAuthority PRO PREMIUM does not host, store, or archive any multimedia content. We provide a technical interface to process public links. Users are solely responsible for the content they access and preserve.
+              </p>
+            </section>
 
-          <h2 className="text-2xl font-bold text-gray-900 mt-12">4. Copyright Disclaimer</h2>
-          <p className="text-gray-600">
-            You must respect the intellectual property rights of others. You agree not to use Vytrixe to download copyrighted content without the express permission of the copyright holder. Vytrixe is intended for personal, non-commercial use only.
-          </p>
+            <section className="space-y-6">
+              <div className="flex items-center gap-4 text-white">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-600 to-green-400 flex items-center justify-center text-white shadow-lg shadow-green-500/20">
+                  <UserCheck size={24} />
+                </div>
+                <h2 className="text-2xl font-black uppercase tracking-tighter italic">3. Intellectual Property</h2>
+              </div>
+              <p className="text-sm md:text-base">
+                Users must respect the intellectual property rights of content creators and platforms. You agree not to use ViralAuthority PRO PREMIUM to process copyrighted material without the express permission of the original owner.
+              </p>
+            </section>
 
-          <h2 className="text-2xl font-bold text-gray-900 mt-12">5. Disclaimer of Warranties</h2>
-          <p className="text-gray-600">
-            The service is provided "as is" and "as available" without any warranties of any kind. We do not guarantee that the service will be uninterrupted or error-free.
-          </p>
+            <section className="space-y-6 border-t border-white/5 pt-12">
+              <h3 className="text-xl font-black uppercase tracking-tighter italic text-white">Liability Disclaimer</h3>
+              <p className="text-sm">
+                ViralAuthority PRO PREMIUM is provided "as is" without any warranties. We are not liable for any direct or indirect damages resulting from the use or inability to use our services.
+              </p>
+            </section>
+
+          </div>
+
         </div>
       </main>
+
       <Footer />
     </div>
   );
 }
-

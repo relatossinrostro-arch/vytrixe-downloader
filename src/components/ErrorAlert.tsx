@@ -3,6 +3,7 @@
 import { AlertCircle, X, ShieldAlert } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
+import { UNSUPPORTED_LINK_ERROR } from "@/lib/platforms";
 
 interface ErrorAlertProps {
   message: string;
@@ -11,6 +12,7 @@ interface ErrorAlertProps {
 
 export function ErrorAlert({ message, onClear }: ErrorAlertProps) {
   const { t } = useLanguage();
+  const isUnsupportedLink = message === UNSUPPORTED_LINK_ERROR;
 
   return (
     <motion.div 
@@ -23,7 +25,9 @@ export function ErrorAlert({ message, onClear }: ErrorAlertProps) {
           <ShieldAlert size={24} />
         </div>
         <div className="flex-1">
-          <h4 className="text-[11px] font-black text-red-500 uppercase tracking-[0.2em] mb-1">{t("error_system_exception")}</h4>
+          <h4 className="text-[11px] font-black text-red-500 uppercase tracking-[0.2em] mb-1">
+            {isUnsupportedLink ? "Enlace no soportado" : t("error_system_exception")}
+          </h4>
           <p className="text-sm font-bold text-white leading-relaxed">{message}</p>
         </div>
         <button 

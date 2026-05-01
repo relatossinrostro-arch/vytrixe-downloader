@@ -30,7 +30,7 @@ export function ProBannerVIP() {
             </div>
             <div className="space-y-1">
               <div className="flex items-center justify-center md:justify-start gap-3">
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-300">Vytrixe Pro Access</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-300">ViralAuthority PRO PREMIUM Access</span>
                 <span className="px-2 py-0.5 rounded-md bg-white text-blue-600 text-[8px] font-black uppercase animate-pulse">45% OFF</span>
               </div>
               <h2 className="text-2xl md:text-3xl font-black italic tracking-tighter text-white leading-tight">

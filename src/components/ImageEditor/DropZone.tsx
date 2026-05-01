@@ -96,7 +96,7 @@ export function DropZone({ onFileSelect, onLinkSubmit }: DropZoneProps) {
           
           <div 
             {...getRootProps()}
-            className={`relative flex flex-col items-center justify-center p-16 border-2 border-dashed rounded-[2.5rem] transition-all cursor-pointer overflow-hidden
+            className={`relative flex flex-col items-center justify-center p-8 sm:p-16 border-2 border-dashed rounded-[2.5rem] transition-all cursor-pointer overflow-hidden
               ${isDragActive 
                 ? 'border-blue-500 bg-blue-500/10 scale-[1.02] shadow-[0_0_50px_rgba(59,130,246,0.3)]' 
                 : 'border-white/10 bg-black hover:border-white/20'}`}
@@ -105,15 +105,15 @@ export function DropZone({ onFileSelect, onLinkSubmit }: DropZoneProps) {
             
             <motion.div
               animate={isDragActive ? { scale: 1.2, rotate: 10 } : { scale: 1, rotate: 0 }}
-              className="w-24 h-24 rounded-3xl bg-white/5 flex items-center justify-center text-blue-500 mb-8 border border-white/5 shadow-inner"
+              className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-white/5 flex items-center justify-center text-blue-500 mb-8 border border-white/5 shadow-inner"
             >
-              <Upload size={48} className={isDragActive ? "animate-bounce" : ""} />
+              <Upload size={42} className={isDragActive ? "animate-bounce" : ""} />
             </motion.div>
 
-            <h2 className="text-3xl font-black uppercase tracking-tight mb-3">
-              {isDragActive ? "Sueltalo aquí 🔥" : "Vytrixe Studio"}
+            <h2 className="max-w-full text-center text-xl sm:text-3xl font-black uppercase tracking-tight leading-tight mb-3 break-words">
+              {isDragActive ? "Sueltalo aquí 🔥" : "ViralAuthority PRO PREMIUM Studio"}
             </h2>
-            <p className="text-gray-400 font-medium mb-8 text-center max-w-md">
+            <p className="text-gray-400 font-medium mb-8 text-center max-w-md text-sm sm:text-base">
               Arrastra tu imagen o video aquí, o haz clic para subirlo. <br/>
               <span className="text-[10px] uppercase tracking-widest text-white/30 font-black">JPG · PNG · WEBP · MP4</span>
               <span className="hidden sm:block mt-2 text-[11px] text-blue-400/60 font-bold tracking-tight">

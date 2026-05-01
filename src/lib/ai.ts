@@ -6,7 +6,7 @@ export async function removeImageBackground(imageSrc: string): Promise<string> {
       progress: (key: string, current: number, total: number) => {
         console.log(`AI Background Removal: ${key} ${Math.round((current / total) * 100)}%`);
       },
-      publicPath: "https://static.vytrixe.com/models/background-removal/", // Example CDN or local path
+      publicPath: "https://static.viralauthoritypro.com/models/background-removal/", // Example CDN or local path
     };
 
     const blob = await removeBackground(imageSrc, config as any);

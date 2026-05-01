@@ -9,7 +9,7 @@ export function AdNative() {
 
   useEffect(() => {
     // 1. Consent Validation
-    const consent = typeof window !== "undefined" ? localStorage.getItem("vytrixe-cookie-consent") : null;
+    const consent = typeof window !== "undefined" ? localStorage.getItem("viralauthoritypro-cookie-consent") : null;
     if (consent !== "true") return;
     
     if (!containerRef.current) return;
@@ -26,7 +26,7 @@ export function AdNative() {
       script.id = ADS_SCRIPTS.NATIVE.id;
       
       containerRef.current.appendChild(script);
-      console.log(`💰 Vytrixe: Native Ad [${ADS_SCRIPTS.NATIVE.key}] injected.`);
+      console.log(`💰 ViralAuthority PRO PREMIUM: Native Ad [${ADS_SCRIPTS.NATIVE.key}] injected.`);
     } catch (err) {
       console.error("Adsterra Native Error:", err);
     }
@@ -43,7 +43,7 @@ export function AdNative() {
         ref={containerRef} 
         className="min-h-[250px] w-full rounded-[2.5rem] bg-white/5 border border-white/10 p-4 transition-all flex items-center justify-center text-gray-500 italic text-xs font-black uppercase tracking-widest"
       >
-        Waiting for Vytrixe Engine...
+        Waiting for ViralAuthority PRO PREMIUM Engine...
       </div>
     </div>
   );

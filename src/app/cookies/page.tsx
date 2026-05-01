@@ -38,8 +38,8 @@ export default function CookiesPage() {
                 <h2 className="text-2xl font-black uppercase tracking-tighter italic">How We Use Cookies</h2>
               </div>
               <p className="text-sm md:text-base">
-                Vytrixe uses "cookies" and similar tracking technologies to optimize your downloading experience. 
-                These small files allow us to remember your preferences (like language) and ensure that your Pro features remain active during your session.
+                ViralAuthority PRO PREMIUM uses "cookies" and similar tracking technologies to optimize your downloading experience and provide analytics. 
+                These small files allow us to remember your preferences (like language), analyze traffic patterns, and ensure that your Pro features remain active during your session. We use these for basic functionality and performance analysis.
               </p>
             </section>
 
@@ -55,7 +55,7 @@ export default function CookiesPage() {
                 },
                 { 
                   title: "Performance Cookies", 
-                  desc: "Help us understand how users navigate Vytrixe so we can optimize download speeds.", 
+                  desc: "Help us understand how users navigate ViralAuthority PRO PREMIUM so we can optimize download speeds.", 
                   status: "Enabled",
                   color: "text-blue-500",
                   icon: <Settings size={16} />
@@ -91,7 +91,7 @@ export default function CookiesPage() {
               </div>
               <p className="text-sm md:text-base">
                 You can control and manage cookies through your browser settings. Please note that disabling 
-                essential cookies may prevent you from logging in or using Vytrixe Pro features correctly. 
+                essential cookies may prevent you from logging in or using ViralAuthority PRO PREMIUM features correctly. 
                 For a detailed guide on managing cookies, visit <span className="text-red-500 underline cursor-pointer">aboutcookies.org</span>.
               </p>
             </section>

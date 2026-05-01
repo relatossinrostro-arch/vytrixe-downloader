@@ -9,7 +9,7 @@ export function AdPopunder() {
 
   useEffect(() => {
     // 1. Consent Validation
-    const consent = typeof window !== "undefined" ? localStorage.getItem("vytrixe-cookie-consent") : null;
+    const consent = typeof window !== "undefined" ? localStorage.getItem("viralauthoritypro-cookie-consent") : null;
     if (consent !== "true" || isPremium) return;
 
     // 2. Frequency Check (24 Hours)
@@ -17,7 +17,7 @@ export function AdPopunder() {
     const now = Date.now();
     
     if (lastShow && now - parseInt(lastShow) < ADS_FREQUENCY.POPUNDER_MS) {
-      console.log("🛡️ Vytrixe: Popunder skipped (24h cooldown active)");
+      console.log("🛡️ ViralAuthority PRO PREMIUM: Popunder skipped (24h cooldown active)");
       return;
     }
 
@@ -36,7 +36,7 @@ export function AdPopunder() {
       
       // Update Cooldown
       localStorage.setItem("adsterra_last_shown", now.toString());
-      console.log("💰 Vytrixe: Production Popunder initiated.");
+      console.log("💰 ViralAuthority PRO PREMIUM: Production Popunder initiated.");
     } catch (err) {
       console.error("Adsterra Popunder Error:", err);
     }

@@ -4,14 +4,19 @@ import React, { useRef, useEffect, useState, forwardRef, useImperativeHandle } f
 import { fabric } from "fabric";
 import { useEditorStore } from "@/store/editorStore";
 
-export const CanvasView = forwardRef((props, ref) => {
+interface CanvasViewProps {
+  isCropping: boolean;
+}
+
+export const CanvasView = forwardRef<any, CanvasViewProps>((props, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricCanvas = useRef<fabric.Canvas | null>(null);
-  const { 
+  const {
     imageSrc, isDrawingMode, brushColor, brushWidth,
     brightness, contrast, saturate, sepia, hue, blur, temperature, vignette, exposure,
-    saveToHistory
+    saveToHistory, cropRatio, setImage
   } = useEditorStore();
+  const { isCropping } = props as any;
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -28,14 +33,14 @@ export const CanvasView = forwardRef((props, ref) => {
         fill: "#ffffff",
         fontWeight: "900",
       });
-      fabricCanvas.current.add(text).setActiveObject(text);
+      (fabricCanvas.current as any).add(text).setActiveObject(text);
       saveToHistory();
     },
     addShape: (type: string) => {
       if (!fabricCanvas.current) return;
       let shape;
       const common = { left: 100, top: 100, fill: "transparent", stroke: brushColor, strokeWidth: brushWidth };
-      
+
       if (type === 'rect') shape = new fabric.Rect({ ...common, width: 100, height: 100 });
       else if (type === 'circle') shape = new fabric.Circle({ ...common, radius: 50 });
       else if (type === 'arrow') {
@@ -44,7 +49,7 @@ export const CanvasView = forwardRef((props, ref) => {
       }
 
       if (shape) {
-        fabricCanvas.current.add(shape).setActiveObject(shape);
+        (fabricCanvas.current as any).add(shape).setActiveObject(shape);
         saveToHistory();
       }
     },
@@ -54,16 +59,89 @@ export const CanvasView = forwardRef((props, ref) => {
       if (!img) return;
 
       img.filters = []; // Clear current filters for preset apply
-      
+
       switch(filterName) {
         case 'B&N': img.filters.push(new fabric.Image.filters.Grayscale()); break;
         case 'Sepia': img.filters.push(new fabric.Image.filters.Sepia()); break;
-        case 'Vintage': img.filters.push(new fabric.Image.filters.Vintage()); break;
+        case 'Vintage': {
+          const VintageFilter = (fabric.Image.filters as unknown as Record<string, new () => fabric.IBaseFilter>).Vintage;
+          if (VintageFilter) img.filters.push(new VintageFilter());
+          break;
+        }
         case 'HDR': img.filters.push(new fabric.Image.filters.Contrast({ contrast: 0.5 })); break;
       }
 
       img.applyFilters();
       fabricCanvas.current.renderAll();
+      saveToHistory();
+    },
+    applyCrop: async () => {
+      if (!fabricCanvas.current) return;
+      const cropRect = fabricCanvas.current.getObjects().find(obj => (obj as any).isCropRect) as fabric.Rect;
+      if (!cropRect) return;
+
+      // Hide crop rect before taking screenshot
+      cropRect.set('visible', false);
+      fabricCanvas.current.renderAll();
+
+      const bounds = cropRect.getBoundingRect();
+      
+      // We need to account for zoom
+      const zoom = fabricCanvas.current.getZoom();
+      
+      const croppedDataUrl = fabricCanvas.current.toDataURL({
+        left: bounds.left,
+        top: bounds.top,
+        width: bounds.width,
+        height: bounds.height,
+        format: 'png',
+        multiplier: 1 / zoom // Important to keep original scale if needed, or 1 for current view
+      });
+
+      // Show it back (though we are likely resetting the image)
+      cropRect.set('visible', true);
+      fabricCanvas.current.renderAll();
+
+      if (croppedDataUrl) {
+        setImage(croppedDataUrl);
+        saveToHistory();
+        return true;
+      }
+      return false;
+    },
+    rotate: (angle: number) => {
+      if (!fabricCanvas.current) return;
+      const img = fabricCanvas.current.getObjects("image")[0] as fabric.Image;
+      if (!img) return;
+      img.rotate((img.angle || 0) + angle);
+      fabricCanvas.current.renderAll();
+      saveToHistory();
+    },
+    flip: (axis: 'x' | 'y') => {
+      if (!fabricCanvas.current) return;
+      const img = fabricCanvas.current.getObjects("image")[0] as fabric.Image;
+      if (!img) return;
+      if (axis === 'x') img.set('flipX', !img.flipX);
+      else img.set('flipY', !img.flipY);
+      fabricCanvas.current.renderAll();
+      saveToHistory();
+    },
+    resize: (width: number, height: number) => {
+      if (!fabricCanvas.current) return;
+      const img = fabricCanvas.current.getObjects("image")[0] as fabric.Image;
+      if (!img) return;
+
+      const imgElement = img.getElement() as HTMLImageElement;
+      const tempCanvas = document.createElement("canvas");
+      const ctx = tempCanvas.getContext("2d");
+      if (!ctx) return;
+
+      tempCanvas.width = width;
+      tempCanvas.height = height;
+      ctx.drawImage(imgElement, 0, 0, width, height);
+
+      const resizedDataUrl = tempCanvas.toDataURL("image/png", 1.0);
+      setImage(resizedDataUrl);
       saveToHistory();
     }
   }));
@@ -105,12 +183,12 @@ export const CanvasView = forwardRef((props, ref) => {
   // Load Image
   useEffect(() => {
     if (!imageSrc || !fabricCanvas.current) return;
-    
+
     setIsLoading(true);
     fabric.Image.fromURL(imageSrc, (img) => {
       if (!fabricCanvas.current) return;
       fabricCanvas.current.clear();
-      
+
       // Scale image to fit canvas
       const scale = Math.min(800 / (img.width || 800), 600 / (img.height || 600));
       img.scale(scale);
@@ -141,7 +219,68 @@ export const CanvasView = forwardRef((props, ref) => {
     }
   }, [isDrawingMode, brushColor, brushWidth]);
 
-  // Apply Adjustments (Filters)
+  // Handle Crop Mode UI
+  useEffect(() => {
+    if (!fabricCanvas.current) return;
+
+    if (isCropping) {
+      const mainImg = fabricCanvas.current.getObjects("image")[0] as fabric.Image | undefined;
+      const imageBounds = mainImg ? (mainImg as any).getBoundingRect(true, true) : null;
+      const defaultWidth = imageBounds ? Math.min(imageBounds.width * 0.75, 500) : 300;
+      const defaultHeight = imageBounds ? Math.min(imageBounds.height * 0.75, 350) : 200;
+
+      // Create Crop Rect
+      const rect = new fabric.Rect({
+        left: imageBounds ? imageBounds.left + imageBounds.width / 2 : 400,
+        top: imageBounds ? imageBounds.top + imageBounds.height / 2 : 300,
+        width: defaultWidth,
+        height: defaultHeight,
+        originX: 'center',
+        originY: 'center',
+        fill: 'transparent',
+        stroke: '#3b82f6',
+        strokeWidth: 2,
+        cornerColor: '#3b82f6',
+        cornerStyle: 'circle',
+        cornerSize: 12,
+        transparentCorners: false,
+        borderColor: '#3b82f6',
+        hasRotatingPoint: false
+      });
+      (rect as fabric.Rect & { isCropRect?: boolean }).isCropRect = true;
+
+      // Apply Aspect Ratio
+      if (cropRatio !== 'Free') {
+        const [w, h] = cropRatio.split(':').map(Number);
+        const ratio = w / h;
+        rect.set('height', rect.width! / ratio);
+        rect.setControlsVisibility({
+          ml: false,
+          mr: false,
+          mt: false,
+          mb: false,
+        });
+        rect.on('scaling', (e) => {
+          const target = e.transform?.target;
+          if (target) {
+            const scaledWidth = target.getScaledWidth();
+            target.set({
+              scaleY: target.scaleX,
+              height: (target.width || scaledWidth) / ratio,
+            });
+          }
+        });
+      }
+
+      fabricCanvas.current.add(rect);
+      fabricCanvas.current.setActiveObject(rect);
+      fabricCanvas.current.renderAll();
+    } else {
+      const cropRect = fabricCanvas.current.getObjects().find(obj => (obj as any).isCropRect);
+      if (cropRect) fabricCanvas.current.remove(cropRect);
+      fabricCanvas.current.renderAll();
+    }
+  }, [isCropping, cropRatio]);
   useEffect(() => {
     if (!fabricCanvas.current) return;
     const img = fabricCanvas.current.getObjects("image")[0] as fabric.Image;
@@ -163,7 +302,7 @@ export const CanvasView = forwardRef((props, ref) => {
       <div className="relative shadow-[0_0_100px_rgba(0,0,0,0.5)] rounded-lg overflow-hidden bg-[#111]">
         <canvas ref={canvasRef} />
       </div>
-      
+
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-10">
           <div className="w-12 h-12 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />

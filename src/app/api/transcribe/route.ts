@@ -1,78 +1,103 @@
 import { NextResponse } from "next/server";
 import { pipeline, env } from "@xenova/transformers";
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
-import { exec } from "child_process";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { execFile } from "child_process";
 import { promisify } from "util";
 import fs from "fs";
 import path from "path";
 import os from "os";
-// @ts-ignore
 import { WaveFile } from "wavefile";
-import { getVideoInfo } from "@/lib/video";
+import OpenAI from "openai";
 
-const execAsync = promisify(exec);
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+export const runtime = "nodejs";
+export const maxDuration = 300;
 
-// Configure Transformers to not try looking for local filesystem models first (prevents errors)
-// and cache the model in the Node environment.
+const execFileAsync = promisify(execFile);
+const winYtDlp = "C:/Users/georg/AppData/Local/Microsoft/WinGet/Links/yt-dlp.exe";
+const winFfmpeg = "C:/Users/georg/AppData/Local/Microsoft/WinGet/Packages/yt-dlp.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-N-123778-g3b55818764-win64-gpl/bin/ffmpeg.exe";
+
 env.allowLocalModels = false;
-env.useBrowserCache = false; 
+env.useBrowserCache = false;
 
-// Singleton for the transcriber so it only loads into memory once per server lifecycle
-let transcriberWorker: any = null;
+type Segment = { start: number; end: number; text: string };
+type WhisperChunk = { text?: string; timestamp?: [number, number] | number[] };
+type WhisperOutput = { text?: string; chunks?: WhisperChunk[] };
+type TranscriberWorker = (audio: Float32Array, options: Record<string, unknown>) => Promise<WhisperOutput>;
+type OpenAIVerboseTranscription = { text?: string; segments?: Segment[] };
 
-async function getTranscriber() {
-  if (!transcriberWorker) {
-    console.log("[Vytrixe AI] Initializing Whisper-Tiny Model...");
-    transcriberWorker = await pipeline("automatic-speech-recognition", "Xenova/whisper-tiny");
+let transcriberWorker: TranscriberWorker | null = null;
+
+function getBinaryPaths() {
+  const ytDlpPath = path.normalize(process.env.YT_DLP_PATH || winYtDlp);
+  const ffmpegPath = path.normalize(process.env.FFMPEG_PATH || winFfmpeg);
+  const ffprobePath = process.env.FFPROBE_PATH
+    ? path.normalize(process.env.FFPROBE_PATH)
+    : ffmpegPath.replace(/ffmpeg(\.exe)?$/i, "ffprobe$1");
+
+  return { ytDlpPath, ffmpegPath, ffprobePath };
+}
+
+function getTempDir() {
+  const projectTemp = path.join(/*turbopackIgnore: true*/ os.tmpdir(), "viralauthoritypro-transcribe");
+  try {
+    fs.mkdirSync(projectTemp, { recursive: true });
+    return projectTemp;
+  } catch {
+    return os.tmpdir();
   }
-  return transcriberWorker;
 }
 
-/**
- * Filter to remove hallucinated repetition loops commonly found in smaller Whisper models.
- * Detects patterns that repeat more than 3 times consecutively.
- */
-function cleanRepetitions(text: string): string {
-  if (!text) return "";
-  
-  // Pattern 1: Catch "word word word" or "1. 1. 1."
-  // Look for 3 or more repetitions of a sequence (at least 2 chars long)
-  let cleaned = text.replace(/(.{2,})\1{3,}/gi, (match, group) => {
-    console.log(`[Vytrixe AI] Pruning repetitive sequence: "${group.substring(0, 20)}..."`);
-    return group; 
-  });
-
-  // Pattern 2: Single char repetitions (> 5 times) like ".........."
-  cleaned = cleaned.replace(/(.)\1{10,}/g, (match, group) => {
-    return group.repeat(3);
-  });
-
-  return cleaned.trim();
+function cleanupFiles(paths: string[]) {
+  for (const filePath of paths) {
+    if (filePath && fs.existsSync(filePath)) {
+      try {
+        fs.unlinkSync(filePath);
+      } catch (error) {
+        console.warn("[ViralAuthority PRO PREMIUM AI] Cleanup failed:", filePath, error);
+      }
+    }
+  }
 }
 
-/**
- * Advanced formatting: Adds punctuation, capitalization, and logical paragraphs
- * based on audio timestamps and silence detection.
- */
-function formatTranscription(output: any): string {
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "Fallo critico en el motor de transcripcion.";
+}
+
+async function getRemoteDuration(url: string, ytDlpPath: string) {
+  const { stdout } = await execFileAsync(
+    ytDlpPath,
+    [url, "--dump-single-json", "--no-playlist", "--skip-download", "--no-warnings"],
+    { timeout: 45_000, maxBuffer: 1024 * 1024 * 8, windowsHide: true },
+  );
+
+  const info = JSON.parse(stdout);
+  return typeof info.duration === "number" ? info.duration : 0;
+}
+
+function formatTranscription(output: WhisperOutput): { text: string, segments: Segment[] } {
   const chunks = output.chunks || [];
-  if (chunks.length === 0) return output.text || "";
+  if (chunks.length === 0) return { text: output.text || "", segments: [] };
 
   let formatted = "";
+  const segments: Segment[] = [];
   let lastEndTime = 0;
 
   for (let i = 0; i < chunks.length; i++) {
     const chunk = chunks[i];
-    let chunkText = chunk.text.trim();
+    let chunkText = (chunk.text || "").trim();
     if (!chunkText) continue;
 
     const startTime = Array.isArray(chunk.timestamp) ? chunk.timestamp[0] : 0;
     const endTime = Array.isArray(chunk.timestamp) ? chunk.timestamp[1] : startTime + 5;
 
-    // Detect silence (> 1.2 seconds) to insert a paragraph break
+    segments.push({
+      start: startTime,
+      end: endTime,
+      text: chunkText
+    });
+
     const isNewParagraph = formatted.length > 0 && (startTime - lastEndTime > 1.2);
-    
+
     if (isNewParagraph) {
       if (!/[.!?]$/.test(formatted.trim())) formatted = formatted.trim() + ".";
       formatted += "\n\n";
@@ -80,16 +105,14 @@ function formatTranscription(output: any): string {
       formatted += " ";
     }
 
-    // SMART CAPITALIZATION: Only capitalize if it's the absolute start OR after a sentence-ending punctuation
     const trimmedFormatted = formatted.trim();
-    const shouldCapitalize = trimmedFormatted.length === 0 || 
-                             trimmedFormatted.endsWith("\n\n") || 
+    const shouldCapitalize = trimmedFormatted.length === 0 ||
+                             trimmedFormatted.endsWith("\n\n") ||
                              /[.!?]$/.test(trimmedFormatted);
-                             
+
     if (shouldCapitalize) {
       chunkText = chunkText.charAt(0).toUpperCase() + chunkText.slice(1);
     } else {
-      // Ensure the chunk doesn't carry an accidental leading capital from Whisper
       chunkText = chunkText.charAt(0).toLowerCase() + chunkText.slice(1);
     }
 
@@ -97,98 +120,158 @@ function formatTranscription(output: any): string {
     lastEndTime = endTime;
   }
 
-  // Final Cleanup
   formatted = formatted.trim();
   if (formatted && !/[.!?]$/.test(formatted)) formatted += ".";
 
-  return formatted;
+  return { text: formatted, segments };
+}
+
+async function improveTranscript(text: string): Promise<string> {
+  const geminiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+  if (geminiKey && text.trim()) {
+    try {
+      console.log("[ViralAuthority PRO PREMIUM AI] Mejorando transcripción con Gemini...");
+      const genAI = new GoogleGenerativeAI(geminiKey);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const prompt = `Convierte este texto transcrito en un guion viral narrativo (storytelling), manteniendo su significado e idea original.
+
+REGLAS ESTRICTAS:
+- Usa frases muy cortas.
+- Estructura por bloques visuales.
+- Agrega pausas dramáticas (...).
+- Genera ritmo, tensión y suspenso.
+- No resumas la historia, cuenta lo mismo pero con impacto emocional.
+- Estilo: TikTok / YouTube Shorts.
+- Debe tener lectura fluida ideal para una voz IA narradora.
+- Añade un "hook" (gancho) inicial si es necesario.
+
+Texto original:
+${text}`;
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const refined = response.text().trim();
+      if (refined) return refined;
+    } catch (err) {
+      console.error("[ViralAuthority PRO PREMIUM AI] Error en Gemini al mejorar, usando fallback", err);
+    }
+  }
+
+  // Fallback (Limpieza Básica)
+  console.log("[ViralAuthority PRO PREMIUM AI] Aplicando Fallback de limpieza básica...");
+  let cleaned = text.trim();
+  if (cleaned.length > 0 && !/[.!?]$/.test(cleaned)) {
+    cleaned += ".";
+  }
+  // Remove redundant spaces
+  cleaned = cleaned.replace(/\s+/g, ' ');
+  // Capitalize first letter of string
+  if (cleaned.length > 0) {
+    cleaned = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+  }
+  // Capitalize after periods
+  cleaned = cleaned.replace(/([.!?]\s+)([a-z])/g, (match, p1, p2) => p1 + p2.toUpperCase());
+  return cleaned;
 }
 
 export async function POST(request: Request) {
   let tempFilePath = "";
-  
+  const tempFilesToCleanup: string[] = [];
+
   try {
-    const formData = await request.formData();
+    let formData: FormData;
+    try {
+      formData = await request.formData();
+    } catch {
+      return NextResponse.json({ error: "Formulario invalido o vacio" }, { status: 400 });
+    }
+
     const url = formData.get("url") as string;
     const file = formData.get("file") as File;
     const targetLanguage = (formData.get("targetLanguage") as string) || "auto";
-    const userId = formData.get("userId") as string; // Optional: Pass from frontend if logged in
+    const userId = formData.get("userId") as string;
 
-    console.log(`[Vytrixe AI] RECIBIDO - Modo: ${file ? 'Archivo' : 'URL'}, Idioma: ${targetLanguage}, User: ${userId || 'Guest'}`);
+    console.log(`[ViralAuthority PRO PREMIUM AI] RECIBIDO - Modo: ${file ? 'Archivo' : 'URL'}, Idioma: ${targetLanguage}, User: ${userId || 'Guest'}`);
 
     if (!url && !file) {
       return NextResponse.json({ error: "Please provide a Video URL or upload a File" }, { status: 400 });
     }
 
-    // Paths
-    const winYtDlp = "C:/Users/georg/AppData/Local/Microsoft/WinGet/Links/yt-dlp.exe";
-    const winFfmpeg = "C:/Users/georg/AppData/Local/Microsoft/WinGet/Packages/yt-dlp.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-N-123778-g3b55818764-win64-gpl/bin/ffmpeg.exe";
-    const ytDlpPath = path.normalize(process.env.YT_DLP_PATH || winYtDlp);
-    const ffmpegPath = path.normalize(process.env.FFMPEG_PATH || winFfmpeg);
+    const { ytDlpPath, ffmpegPath, ffprobePath } = getBinaryPaths();
+    const tempDir = getTempDir();
 
-    let tempDir = path.join(process.cwd(), "tmp");
-    if (!fs.existsSync(tempDir)) {
-      try {
-        fs.mkdirSync(tempDir, { recursive: true });
-      } catch (e) {
-        tempDir = os.tmpdir();
-      }
-    }
-    
-    tempFilePath = path.join(tempDir, `vyt_audio_${Date.now()}.wav`);
+    // Extract to MP3 to ensure compatibility with OpenAI's 25MB limit (WAV is too large)
+    tempFilePath = path.join(tempDir, `vyt_audio_${Date.now()}.mp3`);
+    tempFilesToCleanup.push(tempFilePath);
 
     if (file) {
-      // --- FILE UPLOAD PROCESSING ---
-      console.log(`[Vytrixe AI] Processing PRO Upload: ${file.name} (${file.size} bytes)`);
-      
+      console.log(`[ViralAuthority PRO PREMIUM AI] Processing Upload: ${file.name} (${file.size} bytes)`);
+
       const inputTempPath = path.join(tempDir, `vyt_input_${Date.now()}_${file.name.replace(/[^a-z0-9.]/gi, '_')}`);
+      tempFilesToCleanup.push(inputTempPath);
       const arrayBuffer = await file.arrayBuffer();
       fs.writeFileSync(inputTempPath, Buffer.from(arrayBuffer));
 
-      console.log(`[Vytrixe AI] Processing media...`);
+      console.log(`[ViralAuthority PRO PREMIUM AI] Extracting audio...`);
       try {
-        const ffmpegCmd = `"${ffmpegPath}" -y -i "${inputTempPath}" -vn -ar 16000 -ac 1 -c:a pcm_s16le "${tempFilePath}"`;
-        await execAsync(ffmpegCmd);
-        
-        // Duration Check for Files (Optional, but good for enforcement)
+        // Extract to MP3 128k (Fast and small)
+        await execFileAsync(ffmpegPath, [
+          "-y",
+          "-i", inputTempPath,
+          "-vn",
+          "-ar", "16000",
+          "-ac", "1",
+          "-b:a", "128k",
+          tempFilePath,
+        ], { timeout: 120_000, maxBuffer: 1024 * 1024 * 8, windowsHide: true });
+
         try {
-          const ffprobeCmd = `"${ffmpegPath.replace('ffmpeg.exe', 'ffprobe.exe')}" -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${inputTempPath}"`;
-          const { stdout } = await execAsync(ffprobeCmd);
+          const { stdout } = await execFileAsync(ffprobePath, [
+            "-v", "error",
+            "-show_entries", "format=duration",
+            "-of", "default=noprint_wrappers=1:nokey=1",
+            inputTempPath,
+          ], { timeout: 30_000, maxBuffer: 1024 * 1024, windowsHide: true });
           const duration = parseFloat(stdout);
-          if (duration > 300 && !userId) {
-            throw new Error("Video exceeds 5 minutes. This is a Freemium limit. Unlock unlimited transcriptions with Vytrixe Pro.");
+          if (duration > 600 && !userId) {
+            throw new Error("El archivo excede el límite de 10 minutos (Premium).");
           }
-        } catch (e: any) {
-          console.warn("[Vytrixe AI] Duration check failed, continuing...", e.message);
+        } catch (e: unknown) {
+          const message = getErrorMessage(e);
+          console.warn("[ViralAuthority PRO PREMIUM AI] Duration check failed, continuing...", message);
+          if (message.includes("Premium")) throw e;
         }
 
-        if (fs.existsSync(inputTempPath)) fs.unlinkSync(inputTempPath);
-      } catch (fErr: any) {
-        if (fs.existsSync(inputTempPath)) fs.unlinkSync(inputTempPath);
+        cleanupFiles([inputTempPath]);
+      } catch (fErr: unknown) {
+        cleanupFiles([inputTempPath]);
         throw fErr;
       }
     } else {
-      // --- URL PROCESSING ---
-      console.log(`[Vytrixe AI] PRO Download Start: ${url}`);
-      
-      // Duration Check for URLs
+      console.log(`[ViralAuthority PRO PREMIUM AI] Download Start: ${url}`);
       try {
-        const info = await getVideoInfo(url);
-        if (info.duration && info.duration > 300 && !userId) {
-           // We allow it if the user IS premium, but the backend doesn't know easily without a token.
-           // For now, we'll return a specific error that the frontend can handle or we check if userId is provided.
-           // In a real app, we'd verify the JWT from Supabase here.
-           throw new Error("Video exceeds 5 minutes. Upgrade to Vytrixe Pro for unlimited access.");
+        const duration = await getRemoteDuration(url, ytDlpPath);
+        if (duration && duration > 600 && !userId) {
+           throw new Error("Video exceeds limit. Upgrade to ViralAuthority PRO PREMIUM.");
         }
-      } catch (e: any) {
-        console.warn("[Vytrixe AI] URL info check failed, continuing...", e.message);
-        if (e.message.includes("Upgrade")) throw e;
+      } catch (e: unknown) {
+        const message = getErrorMessage(e);
+        console.warn("[ViralAuthority PRO PREMIUM AI] URL info check failed, continuing...", message);
+        if (message.includes("Upgrade") || message.includes("Premium")) throw e;
       }
 
-      const command = `"${ytDlpPath}" "${url}" -f "bestaudio/best" -x --audio-format wav --audio-quality 0 --postprocessor-args "-ar 16000 -ac 1" --ffmpeg-location "${ffmpegPath}" -o "${tempFilePath}"`;
       try {
-        await execAsync(command);
-      } catch (dlErr: any) {
+        await execFileAsync(ytDlpPath, [
+          url,
+          "-f", "bestaudio/best",
+          "-x",
+          "--audio-format", "mp3",
+          "--audio-quality", "128K",
+          "--postprocessor-args", "-ar 16000 -ac 1",
+          "--ffmpeg-location", ffmpegPath,
+          "-o", tempFilePath.replace(".mp3", ""),
+          "--no-playlist",
+        ], { timeout: 180_000, maxBuffer: 1024 * 1024 * 8, windowsHide: true });
+      } catch {
         throw new Error("Enlace no soportado o caído.");
       }
     }
@@ -197,103 +280,115 @@ export async function POST(request: Request) {
       throw new Error("Error crítico: No se generó el flujo de audio para la IA.");
     }
 
-    console.log("[Vytrixe AI] Audio Ready. Loading AI model (Tiny Mode for Stability)...");
+    let superChargedText = "";
+    let segments: Segment[] = [];
+    let usingOpenAI = false;
 
-    // Convert WAV file to Float32Array
-    const wavBuffer = fs.readFileSync(tempFilePath);
-    const wav = new WaveFile(wavBuffer);
-    wav.toBitDepth('32f'); 
-    wav.toSampleRate(16000); 
-    const audioData = wav.getSamples(false, Float32Array);
-
-    // Using 'tiny' for guaranteed stability and memory efficiency
-    if (!transcriberWorker) {
-      console.log("[Vytrixe AI] Initializing Whisper-Tiny Model...");
-      transcriberWorker = await pipeline("automatic-speech-recognition", "Xenova/whisper-tiny");
-    }
-
-    console.log("[Vytrixe AI] Transcribing... (Whisper Fast Engine)");
-    const output = await transcriberWorker(Array.isArray(audioData) ? audioData[0] : audioData, {
-      chunk_length_s: 30,
-      stride_length_s: 5,
-      repetition_penalty: 1.2,
-      no_repeat_ngram_size: 4,
-      return_timestamps: true,
-    });
-
-    console.log("[Vytrixe AI] Applying Master NLP Protocol via Gemini...");
-    const finalText = formatTranscription(output);
-
-    // AI Polish with Gemini 1.5 PRO - MAXIMUM ACCURACY PROTOCOL
-    const geminiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-    let superChargedText = finalText;
-
-    if (geminiKey && finalText) {
+    // 1. Try OpenAI API (Priority)
+    const openAIApiKey = process.env.OPENAI_API_KEY;
+    if (openAIApiKey) {
       try {
-        console.log("[Vytrixe AI] Super-Charging with Gemini 1.5 PRO (Expert Narrator)...");
-        const genAI = new GoogleGenerativeAI(geminiKey);
-        // Using PRO model for better instruction following and context reasoning
-        const model = genAI.getGenerativeModel({ 
-          model: "gemini-1.5-pro",
-          safetySettings: [
-            { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-            { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
-            { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
-            { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-          ]
+        console.log("[ViralAuthority PRO PREMIUM AI] Using OpenAI Whisper API (High Priority)...");
+        const openai = new OpenAI({ apiKey: openAIApiKey });
+        const transcription = await openai.audio.transcriptions.create({
+          file: fs.createReadStream(tempFilePath),
+          model: "whisper-1",
+          language: targetLanguage !== "auto" ? getLanguageCode(targetLanguage) : undefined,
+          response_format: "verbose_json"
         });
-        
-        const prompt = `ACTÚA COMO UN EDITOR LITERARIO Y EXPERTO EN NLP DE NIVEL SUPERIOR.
-        
-        TU OBJETIVO: Convertir esta transcripción desastrosa en un relato profesional, fluido y con gramática perfecta.
-        
-        REGLA DE ORO: Si Whisper escribió una palabra que no tiene sentido en el contexto del relato, TIENES PROHIBIDO escribirla. Debes adivinar la palabra correcta por contexto.
-        
-        EJEMPLOS DE CORRECCIÓN OBLIGATORIA (CASOS REALES):
-        - "luces de las aulas están incendidas" → "luces de la sala están encendidas"
-        - "sus urros" → "susurros"
-        - "creyos yo" / "creció un mamá" → "creyó que su mamá"
-        - "conojaba" → "enojaba"
-        - "aulas" → "sala" (si el contexto es una casa)
-        - "cementir" → "mentira"
-        - "azala" → "sala"
-        - "medraición no" → "me traicionó"
-        - "sonta" → "tonta"
-        
-        PROTOCOLOS ESTRICTOS:
-        1. COHERENCIA NARRATIVA: Mantén siempre la 3ª persona ("Ella") si es la historia de una seguidora.
-        2. RITMO LITERARIO: Usa párrafos dramáticos, puntos y comas para dar pausas de lectura (Storytime).
-        3. LIMPIEZA TOTAL: Borra muletillas, repeticiones y ruidos del habla.
-        4. GRAMÁTICA RAE: Ortografía y puntuación impecable.
-        
-        TEXTO CRUDO (PARA RECONSTRUIR):
-        "${finalText}"
-        
-        RESPUESTA: Devuelve ÚNICAMENTE el texto final pulido.`;
 
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const refined = response.text().trim();
-        if (refined) superChargedText = refined;
-        console.log("[Vytrixe AI] Gemini 1.5 PRO Analysis Completed.");
-      } catch (geminiErr) {
-        console.error("[Vytrixe AI] Gemini PRO Failed:", geminiErr);
+        const verboseTranscription = transcription as OpenAIVerboseTranscription;
+        superChargedText = (verboseTranscription.text || "").trim();
+        segments = (verboseTranscription.segments || []).map((segment) => ({
+          start: segment.start,
+          end: segment.end,
+          text: segment.text.trim()
+        }));
+
+        usingOpenAI = true;
+        console.log("[ViralAuthority PRO PREMIUM AI] OpenAI Transcription Completed.");
+      } catch (openAiErr) {
+        console.error("[ViralAuthority PRO PREMIUM AI] OpenAI failed. Fallback to Local Whisper.", openAiErr);
       }
     }
 
+    // 2. Fallback to Local Whisper if OpenAI is not available or failed
+    if (!usingOpenAI) {
+      console.log("[ViralAuthority PRO PREMIUM AI] Fallback: Loading Local Whisper-Tiny Model...");
+
+      // Need WAV for local Xenova Whisper. Convert MP3 to WAV.
+      const wavPath = tempFilePath.replace('.mp3', '.wav');
+      tempFilesToCleanup.push(wavPath);
+      await execFileAsync(ffmpegPath, [
+        "-y",
+        "-i", tempFilePath,
+        "-ar", "16000",
+        "-ac", "1",
+        "-c:a", "pcm_s16le",
+        wavPath,
+      ], { timeout: 120_000, maxBuffer: 1024 * 1024 * 8, windowsHide: true });
+
+      const wavBuffer = fs.readFileSync(wavPath);
+      const wav = new WaveFile(wavBuffer);
+      wav.toBitDepth('32f');
+      wav.toSampleRate(16000);
+      const audioData = wav.getSamples(false, Float32Array);
+
+      if (!transcriberWorker) {
+        transcriberWorker = await pipeline("automatic-speech-recognition", "Xenova/whisper-tiny") as TranscriberWorker;
+      }
+
+      console.log("[ViralAuthority PRO PREMIUM AI] Transcribing... (Local Engine)");
+      const output = await transcriberWorker(Array.isArray(audioData) ? audioData[0] : audioData, {
+        chunk_length_s: 30,
+        stride_length_s: 5,
+        repetition_penalty: 1.2,
+        no_repeat_ngram_size: 4,
+        return_timestamps: true,
+      });
+
+      const result = formatTranscription(output);
+      superChargedText = result.text;
+      segments = result.segments;
+
+      cleanupFiles([wavPath]);
+    }
+
     // Final Cleanup
-    if (fs.existsSync(tempFilePath)) fs.unlinkSync(tempFilePath);
-    console.log("[Vytrixe AI] Request Completed.");
+    cleanupFiles(tempFilesToCleanup);
+    console.log("[ViralAuthority PRO PREMIUM AI] Request Completed.");
 
-    return NextResponse.json({ text: superChargedText });
+    if (!superChargedText) {
+      throw new Error("No se pudo generar la transcripción de este audio.");
+    }
 
-  } catch (error: any) {
+    const improvedTranscription = await improveTranscript(superChargedText);
+
+    return NextResponse.json({
+      text: superChargedText,
+      improved: improvedTranscription,
+      segments: segments
+    });
+
+  } catch (error: unknown) {
     console.error("Transcription API Fatal Error:", error);
-    if (tempFilePath && fs.existsSync(tempFilePath)) fs.unlinkSync(tempFilePath);
+    cleanupFiles(tempFilesToCleanup);
 
     return NextResponse.json(
-      { error: error.message || "Fallo crítico en el motor de transcripción." },
+      { error: getErrorMessage(error) },
       { status: 500 }
     );
   }
+}
+
+function getLanguageCode(lang: string): string {
+  const map: Record<string, string> = {
+    "English": "en",
+    "Spanish": "es",
+    "French": "fr",
+    "German": "de",
+    "Italian": "it",
+    "Portuguese": "pt"
+  };
+  return map[lang] || "en";
 }
